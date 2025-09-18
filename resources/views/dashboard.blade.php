@@ -10,6 +10,16 @@
                             <h5 class="card-category">Kinerja Tahun 2025</h5>
                             <h2 class="card-title">Realisasi Padi UMKM Perbulan</h2>
                         </div>
+                        <div class="col-sm-6 d-flex align-items-center justify-content-end">
+                            <div class="filter-tipegrafik-group">
+                                <label for="filterTipeGrafik" class="filter-tipegrafik-label">Tipe Grafik:</label>
+                                <select id="filterTipeGrafik" class="filter-tipegrafik-select">
+                                    <option value="perbandingan">Perbandingan Target & Realisasi</option>
+                                    <option value="realisasi">Realisasi</option>
+                                    <option value="target">Target</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-sm-6">
                             <div class="btn-group btn-group-toggle float-right" data-toggle="buttons">
                                 <input type="text" class="form-control form-control-sm" placeholder="Input" style="width: 120px; display: inline-block; margin-left: 10px;">
@@ -54,50 +64,78 @@
 @endsection
 
 <style>
-    /* Responsive & Modern Dropdown */
-    .filter-kebun-group {
-        min-width: 180px;
-        max-width: 320px;
-        margin-left: auto;
-        display: flex;
-        align-items: center;
-        gap: 8px;
+    .filter-tipegrafik-group, .filter-kebun-group {
+    min-width: 150px;
+    max-width: 220px;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #23243a;
+    border-radius: 10px;
+    padding: 4px 10px;
+    box-shadow: 0 2px 8px 0 rgba(94,114,228,0.10), 0 1px 2px 0 rgba(0,0,0,0.08);
+    border: 1px solid #35376c;
+    position: relative;
     }
-    .filter-kebun-label {
-        font-weight: 700;
-        color: #fff;
-        background: #228B22;
+    .filter-tipegrafik-label, .filter-kebun-label {
+        font-weight: 600;
+        color: #a3aed6;
+        background: transparent;
         border-radius: 6px;
-        padding: 4px 12px;
+        padding: 0 0.5rem 0 0;
         margin-bottom: 0;
         font-size: 1rem;
         letter-spacing: 0.5px;
-        box-shadow: 0 1px 4px rgba(34,139,34,0.08);
+        border: none;
+        box-shadow: none;
     }
-    .filter-kebun-select {
-        width: 170px;
-        font-size: 1rem;
-        font-weight: 600;
-        color: #228B22;
-        background: #f8f9fa;
-        border-radius: 8px;
-        border: 2px solid #228B22;
-        box-shadow: 0 2px 8px rgba(34,139,34,0.07);
-        padding: 6px 14px;
-        transition: border-color 0.2s, box-shadow 0.2s;
+    .filter-tipegrafik-select, .filter-kebun-select {
+    width: 110px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 7px;
+    border: 1px solid #7f83b7;
+    background: #23243a;
+    color: #fff;
+    padding: 5px 10px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 4px rgba(94,114,228,0.07);
+    appearance: none;
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    }
+    .filter-tipegrafik-select:focus, .filter-kebun-select:focus {
+        border-color: #e14eca;
+        box-shadow: 0 0 0 2px #e14eca33;
         outline: none;
     }
-    .filter-kebun-select:focus {
-        border-color: #145214;
-        box-shadow: 0 0 0 2px #b6e7c9;
+    .filter-tipegrafik-select option, .filter-kebun-select option {
+        color: #23243a;
+        background: #fff;
+        font-weight: 500;
+    font-size: 0.85rem;
+        border-radius: 0;
+        padding: 8px 16px;
+    }
+    .filter-tipegrafik-select::-ms-expand, .filter-kebun-select::-ms-expand {
+        display: none;
+    }
+
+    .filter-tipegrafik-group select, .filter-kebun-group select {
+        background-image: url('data:image/svg+xml;utf8,<svg fill="%23a3aed6" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 1.2em;
     }
     @media (max-width: 600px) {
-        .filter-kebun-group {
+        .filter-kebun-group, .filter-tipegrafik-group {
             flex-direction: column;
             align-items: flex-end;
             width: 100%;
         }
-        .filter-kebun-label {
+        .filter-kebun-label, .filter-tipegrafik-label {
             margin-bottom: 4px;
             font-size: 0.98rem;
         }
@@ -111,51 +149,94 @@
     <script src="{{ asset('js/plugins/chartjs.min.js') }}"></script>
     <script>
         $(document).ready(function () {
-            function loadChartAndTable() {
-                $.getJSON('/api/realisasi-padi-umkm', function(data) {
-                    const bulanNama = [
-                        '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-                    ];
-                    const tahun = 2025;
-                    const labels = [];
-                    const values = [];
-                    for (let i = 1; i <= 8; i++) {
-                        labels.push(bulanNama[i] + ' ' + tahun);
-                        const found = data.find(item => Number(item.bulan) === i && Number(item.tahun) === tahun);
-                        values.push(found ? Number(found.realisasi_sd_bulan) : 0);
-                    }
-                    const ctx = document.getElementById('chartBig1').getContext('2d');
-                    if(window.chartBig1Instance) window.chartBig1Instance.destroy();
-                    window.chartBig1Instance = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Realisasi SD Bulan',
-                                data: values,
-                                backgroundColor: 'rgba(72,72,176,0.5)',
-                                borderColor: 'rgba(72,72,176,1)',
-                                borderWidth: 2
-                            }]
+            let cacheRealisasiData = null;
+            function renderChartBig1(tipe) {
+                if (!cacheRealisasiData) return;
+                const data = cacheRealisasiData;
+                const bulanNama = [
+                    '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                ];
+                const tahun = 2025;
+                const labels = [];
+                const targetSdBulan = [];
+                const realisasiSdBulan = [];
+                for (let i = 1; i <= 8; i++) {
+                    labels.push(bulanNama[i] + ' ' + tahun);
+                    const found = data.find(item => Number(item.bulan) === i && Number(item.tahun) === tahun);
+                    targetSdBulan.push(found ? Number(found.target_sd_bulan) : 0);
+                    realisasiSdBulan.push(found ? Number(found.realisasi_sd_bulan) : 0);
+                }
+                let datasets = [];
+                if (tipe === 'perbandingan') {
+                    datasets = [
+                        {
+                            label: 'Target SD Bulan',
+                            data: targetSdBulan,
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2
                         },
-                        options: {
-                            indexAxis: 'x',
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: true } },
-                            scales: {
-                                x: { title: { display: true, text: 'Bulan' }, ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } },
-                                y: {
-                                    title: { display: true, text: 'Realisasi SD Bulan' },
-                                    suggestedMax: Math.max(...values) * 1.2,
-                                    min: 0,
-                                    beginAtZero: true,
-                                    ticks: { callback: function(value) { return value.toLocaleString(); } }
-                                }
+                        {
+                            label: 'Realisasi SD Bulan',
+                            data: realisasiSdBulan,
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2
+                        }
+                    ];
+                } else if (tipe === 'realisasi') {
+                    datasets = [
+                        {
+                            label: 'Realisasi SD Bulan',
+                            data: realisasiSdBulan,
+                            backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 2
+                        }
+                    ];
+                } else if (tipe === 'target') {
+                    datasets = [
+                        {
+                            label: 'Target SD Bulan',
+                            data: targetSdBulan,
+                            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2
+                        }
+                    ];
+                }
+                const ctx = document.getElementById('chartBig1').getContext('2d');
+                if(window.chartBig1Instance) window.chartBig1Instance.destroy();
+                window.chartBig1Instance = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: datasets
+                    },
+                    options: {
+                        indexAxis: 'x',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: true } },
+                        scales: {
+                            x: { title: { display: true, text: 'Bulan' }, ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } },
+                            y: {
+                                title: { display: true, text: 'Nilai (Rp)' },
+                                suggestedMax: Math.max(...targetSdBulan, ...realisasiSdBulan) * 1.2,
+                                min: 0,
+                                beginAtZero: true,
+                                ticks: { callback: function(value) { return value.toLocaleString(); } }
                             }
                         }
-                    });
+                    }
+                });
+            }
+            function loadChartAndTable() {
+                $.getJSON('/api/realisasi-padi-umkm', function(data) {
+                    cacheRealisasiData = data;
+                    const tipe = $('#filterTipeGrafik').val() || 'perbandingan';
+                    renderChartBig1(tipe);
 
 
                     let tbody = '';
@@ -171,6 +252,10 @@
                 });
             }
             loadChartAndTable();
+            $('#filterTipeGrafik').on('change', function() {
+                const tipe = $(this).val();
+                renderChartBig1(tipe);
+            });
             let pembelianPadiData = [];
             let kebunList = [];
             function renderKebunDropdown() {
