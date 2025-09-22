@@ -67,30 +67,4 @@
         </div>
     </div>
 </div>
-
-<div class="row mt-4">
-    <div class="col-12">
-        <div class="card card-chart">
-            <div class="card-header">
-                <div class="d-flex justify-content-between align-items-center" style="flex-wrap:wrap;">
-                    <div>
-                        <h5 class="card-category mb-0">Total Transaksi Padi</h5>
-                        <h2 class="card-title mb-0">Transaksi Padi per Kebun</h2>
-                    </div>
-                    <div class="form-group mb-0 filter-kebun-group">
-                        <label for="filterKebun" class="filter-kebun-label">Filter Kebun:</label>
-                        <select id="filterKebun" class="filter-kebun-select">
-                            <option value="">-- Pilih Kebun --</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-            <div class="card-body">
-                <div class="chart-area" style="width:100%; min-height:300px;">
-                    <canvas id="chartPembelianPadi" style="width:100% !important; height:350px !important;"></canvas>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 @endsection
