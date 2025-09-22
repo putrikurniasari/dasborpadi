@@ -1,91 +1,28 @@
 @extends('layouts.app', ['class' => 'register-page', 'page' => __('Register Page'), 'contentClass' => 'register-page'])
 
 @section('content')
-    <div class="row">
-        <div class="col-md-5 ml-auto">
-            <div class="info-area info-horizontal mt-5">
-                <div class="icon icon-warning">
-                    <i class="tim-icons icon-wifi"></i>
-                </div>
-                <div class="description">
-                    <h3 class="info-title">{{ __('Marketing') }}</h3>
-                    <p class="description">
-                        {{ __('We\'ve created the marketing campaign of the website. It was a very interesting collaboration.') }}
-                    </p>
-                </div>
-            </div>
-            <div class="info-area info-horizontal">
-                <div class="icon icon-primary">
-                    <i class="tim-icons icon-triangle-right-17"></i>
-                </div>
-                <div class="description">
-                    <h3 class="info-title">{{ __('Fully Coded in HTML5') }}</h3>
-                    <p class="description">
-                        {{ __('We\'ve developed the website with HTML5 and CSS3. The client has access to the code using GitHub.') }}
-                    </p>
-                </div>
-            </div>
-            <div class="info-area info-horizontal">
-                <div class="icon icon-info">
-                    <i class="tim-icons icon-trophy"></i>
-                </div>
-                <div class="description">
-                    <h3 class="info-title">{{ __('Built Audience') }}</h3>
-                    <p class="description">
-                        {{ __('There is also a Fully Customizable CMS Admin Dashboard for this product.') }}
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-7 mr-auto">
-            <div class="card card-register card-white">
-                <div class="card-header">
-                    <img class="card-img" src="{{ asset('black') }}/img/card-primary.png" alt="Card image">
-                    <h4 class="card-title">{{ __('Register') }}</h4>
-                </div>
-                <form class="form" method="post" action="{{ route('register') }}">
+    <div class="d-flex justify-content-center align-items-center min-vh-100" >
+        <div class="w-100" style="max-width: 400px;">
+            <div class="p-4 shadow-lg rounded" style="background: #23243a; border: 1px solid #35376c;">
+                <h3 class="text-center mb-4" style="color: #e14eca; font-weight: 700; letter-spacing: 1px;">Daftar Akun</h3>
+                <form method="post" action="{{ route('register') }}">
                     @csrf
-
-                    <div class="card-body">
-                        <div class="input-group{{ $errors->has('name') ? ' has-danger' : '' }}">
-                            <div class="input-group-prepend">
-                                <div class="input-group-text">
-                                    <i class="tim-icons icon-single-02"></i>
-                                </div>
-                            </div>
-                            <input type="text" name="name" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" placeholder="{{ __('Name') }}">
-                            @include('alerts.feedback', ['field' => 'name'])
-                        </div>
-                        
-                        <div class="input-group{{ $errors->has('password') ? ' has-danger' : '' }}">
-                            <div class="input-group-prepend">
-                                <div class="input-group-text">
-                                    <i class="tim-icons icon-lock-circle"></i>
-                                </div>
-                            </div>
-                            <input type="password" name="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" placeholder="{{ __('Password') }}">
-                            @include('alerts.feedback', ['field' => 'password'])
-                        </div>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <div class="input-group-text">
-                                    <i class="tim-icons icon-lock-circle"></i>
-                                </div>
-                            </div>
-                            <input type="password" name="password_confirmation" class="form-control" placeholder="{{ __('Confirm Password') }}">
-                        </div>
-                        <div class="form-check text-left">
-                            <label class="form-check-label">
-                                <input class="form-check-input" type="checkbox">
-                                <span class="form-check-sign"></span>
-                                {{ __('I agree to the') }}
-                                <a href="#">{{ __('terms and conditions') }}</a>.
-                            </label>
-                        </div>
+                    <div class="mb-3">
+                        <label for="username" class="form-label" style="color:#a3aed6;">Username</label>
+                        <input type="text" id="username" name="username" class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}" placeholder="Username" required autofocus>
+                        @include('alerts.feedback', ['field' => 'username'])
                     </div>
-                    <div class="card-footer">
-                        <button type="submit" class="btn btn-primary btn-round btn-lg">{{ __('Get Started') }}</button>
+                    <div class="mb-3">
+                        <label for="password" class="form-label" style="color:#a3aed6;">Password</label>
+                        <input type="password" id="password" name="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" placeholder="Password" required>
+                        @include('alerts.feedback', ['field' => 'password'])
                     </div>
+                    <div class="mb-3">
+                        <label for="password_confirmation" class="form-label" style="color:#a3aed6;">Konfirmasi Password</label>
+                        <input type="password" id="password_confirmation" name="password_confirmation" class="form-control" placeholder="Konfirmasi Password" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100" style="background: linear-gradient(90deg,#e14eca 60%,#23243a 100%); border:none; border-radius: 8px; font-weight:600;">Daftar</button>
+                    <p class="mt-3 mb-0 text-center" style="color:#a3aed6; font-size:0.95rem;">Sudah punya akun? <a href="{{ route('login') }}" style="color:#e14eca;">Login</a></p>
                 </form>
             </div>
         </div>
