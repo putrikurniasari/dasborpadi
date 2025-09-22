@@ -1,13 +1,119 @@
-@import 'tailwindcss';
+/* === Chart Area === */
+.chart-area {
+    width: 100%;
+    min-height: 300px;
+    padding: 15px; /* kasih jarak biar chart ga nempel border */
+}
 
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
-
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
+.chart-area canvas {
+    width: 100% !important;
+    height: auto !important; /* biar fleksibel */
+    max-height: 400px;       /* batasin max height */
 }
 
 
+/* === Filter Group (Grafik & Kebun) === */
+.filter-tipegrafik-group,
+.filter-kebun-group,
+.filter-upload-group {
+    min-width: 150px;
+    max-width: 260px;
+    margin-left: auto; /* biar bisa geser ke kanan */
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #23243a;
+    border-radius: 10px;
+    padding: 4px 10px;
+    box-shadow: 0 2px 8px 0 rgba(94, 114, 228, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.08);
+    border: 1px solid #35376c;
+    position: relative;
+}
+
+/* Label */
+.filter-tipegrafik-label,
+.filter-kebun-label,
+.filter-upload-label {
+    font-weight: 600;
+    color: #a3aed6;
+    background: transparent;
+    border-radius: 6px;
+    padding: 0 0.5rem 0 0;
+    margin-bottom: 0;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    border: none;
+    box-shadow: none;
+    white-space: nowrap;
+}
+
+/* Select & Input */
+.filter-tipegrafik-select,
+.filter-kebun-select,
+.filter-upload-input {
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-radius: 7px;
+    border: 1px solid #7f83b7;
+    background: #23243a;
+    color: #fff;
+    padding: 5px 10px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 1px 4px rgba(94, 114, 228, 0.07);
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    width: 150px;
+    max-width: 100%;  
+}
+
+
+.filter-tipegrafik-select:focus,
+.filter-kebun-select:focus,
+.filter-upload-input:focus {
+    border-color: #e14eca;
+    box-shadow: 0 0 0 2px #e14eca33;
+    outline: none;
+}
+
+/* Dropdown option (dark theme) */
+.filter-tipegrafik-select option,
+.filter-kebun-select option {
+    color: #fff;
+    background: #23243a;
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 8px 16px;
+}
+
+/* Remove default arrow & custom SVG */
+.filter-tipegrafik-group select,
+.filter-kebun-group select {
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23a3aed6" height="20" viewBox="0 0 20 20" width="20" xmlns="http://www.w3.org/2000/svg"><path d="M7.293 7.293a1 1 0 011.414 0L10 8.586l1.293-1.293a1 1 0 111.414 1.414l-2 2a1 1 0 01-1.414 0l-2-2a1 1 0 010-1.414z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2em;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .filter-kebun-group,
+    .filter-tipegrafik-group {
+        flex-direction: column;
+        align-items: flex-end;
+        width: 100%;
+    }
+
+    .filter-kebun-label,
+    .filter-tipegrafik-label {
+        margin-bottom: 4px;
+        font-size: 0.98rem;
+    }
+
+    .filter-kebun-select,
+    .filter-tipegrafik-select {
+        width: 100%;
+        font-size: 0.98rem;
+    }
+}

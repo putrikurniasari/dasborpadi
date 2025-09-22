@@ -14,7 +14,9 @@ return new class extends Migration
             $table->integer('tahun');
             $table->tinyInteger('bulan');
             $table->bigInteger('target_tahun')->nullable();
+            $table->bigInteger('target_bulanan')->nullable();
             $table->bigInteger('target_sd_bulan')->nullable();
+            $table->bigInteger('realisasi_bulanan')->nullable();
             $table->bigInteger('realisasi_sd_bulan')->nullable();
             $table->bigInteger('sisa_target')->nullable();
             $table->bigInteger('selisih_rp')->nullable();

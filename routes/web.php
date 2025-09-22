@@ -5,43 +5,72 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RealisasiPadiUmkmController;
+use App\Http\Controllers\PembelianPadiController;
+use App\Http\Controllers\ExcelController;
 
-// Home route
-Route::get('/home', function () {
-    return redirect()->route('dashboard');
-})->name('home');
+/*
+|--------------------------------------------------------------------------
+| Home & Auth
+|--------------------------------------------------------------------------
+*/
+Route::get('/', fn() => redirect()->route('login'));
 
-// Route untuk edit profil
-Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-Route::post('/profile/password', [ProfileController::class, 'password'])->name('profile.password');
+Route::get('/home', fn() => redirect()->route('dashboard'))->name('home');
 
-// Auth routes
-Route::get('/', function () {
-    return redirect()->route('login');
-});
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/transaksi-padi', [PembelianPadiController::class, 'getByBulan']);
 
-// Route untuk reset password
-Route::get('/password/reset', function () {
-    return view('auth.passwords.email');
-})->name('password.request');
+// Password reset
+Route::get('/password/reset', fn() => view('auth.passwords.email'))->name('password.request');
+Route::post('/password/email', fn() => back()->with('status', 'Link reset password telah dikirim (dummy).'))
+    ->name('password.email');
 
-// Route untuk kirim link reset password
-Route::post('/password/email', function () {
-    // Implementasi pengiriman link reset password bisa ditambahkan di sini
-    return back()->with('status', 'Link reset password telah dikirim (dummy).');
-})->name('password.email');
+/*
+|--------------------------------------------------------------------------
+| Profile
+|--------------------------------------------------------------------------
+*/
+Route::prefix('profile')->group(function () {
+    Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::post('/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/password', [ProfileController::class, 'password'])->name('profile.password');
+});
 
-// Dashboard
+/*
+|--------------------------------------------------------------------------
+| Dashboard
+|--------------------------------------------------------------------------
+*/
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-// API untuk data chart realisasi_padi_umkm
-Route::get('/api/realisasi-padi-umkm', [\App\Http\Controllers\RealisasiPadiUmkmController::class, 'index']);
+/*
+|--------------------------------------------------------------------------
+| API Chart Data
+|--------------------------------------------------------------------------
+*/
+Route::prefix('api')->group(function () {
+    Route::get('/realisasi-padi-umkm', [RealisasiPadiUmkmController::class, 'index']);
+    Route::get('/pembelian-padi', [PembelianPadiController::class, 'index']);
+    Route::post('/upload-realisasi', [RealisasiPadiUmkmController::class, 'uploadRealisasi'])->name('upload.realisasi');
+    Route::post('/upload-pembelian', [PembelianPadiController::class, 'uploadPembelian'])->name('upload.pembelian');
+});
 
-// API untuk data chart pembelian_padi
-Route::get('/api/pembelian-padi', [\App\Http\Controllers\PembelianPadiController::class, 'index']);
+/*
+|--------------------------------------------------------------------------
+| Excel Upload & View
+|--------------------------------------------------------------------------
+*/
+Route::prefix('excel')->group(function () {
+    // Halaman upload & list file
+    Route::get('/realisasi-umkm', [ExcelController::class, 'realisasiPadiUmkm'])->name('excel.realisasi_umkm');
+    Route::get('/pembelian-padi', [ExcelController::class, 'pembelianPadi'])->name('excel.pembelian_padi');
+
+    // Proses upload file
+    Route::post('/realisasi-umkm/upload', [ExcelController::class, 'uploadRealisasi'])->name('excel.realisasi.upload');
+    Route::post('/pembelian-padi/upload', [ExcelController::class, 'uploadPembelian'])->name('excel.pembelian.upload');
+});

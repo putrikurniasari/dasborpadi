@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->bigInteger('transaksi_local')->nullable();
             $table->bigInteger('transaksi_padi')->nullable();
             $table->bigInteger('transaksi_padi_sd')->nullable();
-            $table->string('persen_terhadap_plafond');
+            $table->decimal('persen_terhadap_plafond', 5, 2)->nullable();
             $table->string('status_user');
             $table->integer('bulan');
             $table->integer('tahun');
