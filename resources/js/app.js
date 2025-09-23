@@ -5,16 +5,40 @@ import $ from 'jquery';
 let chartBig1Instance = null;
 let cacheRealisasiData = null;
 let pembelianPadiData = [];
-let selectedTahun = 2025;
+let selectedTahun = null;
+
+// ========================
+// Render Dropdown Tahun
+// ========================
+function renderTahunDropdown() {
+    const $dropdown = $('#filterTahun');
+    $dropdown.empty().append('<option value="" hidden selected>Pilih Tahun</option>');
+
+    if (!cacheRealisasiData || cacheRealisasiData.length === 0) return;
+
+    const tahunList = [...new Set(cacheRealisasiData.map(item => Number(item.tahun)))]
+        .sort((a, b) => b - a);
+
+    tahunList.forEach(th => {
+        $dropdown.append(`<option value="${th}">${th}</option>`);
+    });
+
+    // set default: tahun terbaru
+    selectedTahun = tahunList[0];
+    $dropdown.val(selectedTahun);
+}
 
 // ========================
 // Chart Big 1 - Realisasi UMKM
 // ========================
 function renderChartBig1(tipe) {
-    if (!cacheRealisasiData) return;
+    if (!cacheRealisasiData || !selectedTahun) return;
 
     const data = cacheRealisasiData;
-    const bulanNama = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const bulanNama = [
+        '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
 
     const labels = [];
     const targetSdBulan = [];
@@ -53,10 +77,19 @@ function renderChartBig1(tipe) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: true } },
+            plugins: {
+                legend: { display: true }
+            },
             scales: {
-                x: { title: { display: true, text: 'Bulan' }, ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 } },
-                y: { title: { display: true, text: 'Nilai (Rp)' }, suggestedMax: Math.max(...targetSdBulan, ...realisasiSdBulan) * 1.2, beginAtZero: true }
+                x: {
+                    title: { display: true, text: 'Bulan' },
+                    ticks: { autoSkip: false, maxRotation: 45, minRotation: 0 }
+                },
+                y: {
+                    title: { display: true, text: 'Nilai (Rp)' },
+                    suggestedMax: Math.max(...targetSdBulan, ...realisasiSdBulan) * 1.2,
+                    beginAtZero: true
+                }
             },
             onClick: (evt, elements) => {
                 if (elements.length > 0) {
@@ -65,20 +98,46 @@ function renderChartBig1(tipe) {
                     renderChartPerKebunInSameCard(bulan, selectedTahun);
                 }
             }
-        }
+        },
+        plugins: [{
+            id: 'customLabels',
+            afterDatasetsDraw(chart) {
+                const { ctx } = chart;
+                ctx.save();
+                ctx.font = 'bold 12px sans-serif';
+                ctx.fillStyle = '#ffffffff'; // angka selalu hitam
+                ctx.textAlign = 'center';
+
+                chart.data.datasets.forEach((dataset, i) => {
+                    if (!chart.isDatasetVisible(i)) return;
+
+                    const meta = chart.getDatasetMeta(i);
+                    meta.data.forEach((bar, index) => {
+                        const value = dataset.data[index];
+                        if (value > 0) {
+                            const formatted = value.toLocaleString('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                                minimumFractionDigits: 0
+                            });
+                            ctx.fillText(formatted, bar.x, bar.y - 5);
+                        }
+                    });
+                });
+
+                ctx.restore();
+            }
+        }]
     });
 
-    // tampilkan filter & sembunyikan tombol kembali
     $('#tipeGrafikWrapper').show();
     $('#btnKembaliChart').hide();
     $('#cardTitle').text('Realisasi Padi UMKM');
-
-    // atur tinggi card default
     $('#chartBig1').parent().css('height', '400px');
 }
 
 // ========================
-// Chart detail per kebun (horizontal, bar lebih tebal, nama kebun keluar semua)
+// Chart detail per kebun
 // ========================
 function renderChartPerKebunInSameCard(bulan, tahun) {
     if (!pembelianPadiData.length) return;
@@ -89,43 +148,21 @@ function renderChartPerKebunInSameCard(bulan, tahun) {
     const plafond = filtered.map(item => Number(item.plafond_opl));
     const transaksi = filtered.map(item => Number(item.transaksi_padi));
 
-
     const ctx = document.getElementById('chartBig1');
     if (!ctx) return;
     if (chartBig1Instance) chartBig1Instance.destroy();
 
-    // bikin tinggi card lebih panjang sesuai jumlah label
-    const cardHeight = Math.max(500, labels.length * 50); // 100px per label biar lebih lega
-    $('#chartBig1').css({
-        'height': cardHeight + 'px',     // atur langsung ke canvas juga
-        'max-height': 'none'
-    });
-    $('#chartBig1').parent().css({
-        'height': cardHeight + 'px',
-        'max-height': 'none'
-    });
+    const cardHeight = Math.max(500, labels.length * 50);
+    $('#chartBig1').css({ 'height': cardHeight + 'px', 'max-height': 'none' });
+    $('#chartBig1').parent().css({ 'height': cardHeight + 'px', 'max-height': 'none' });
 
     chartBig1Instance = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: labels,
             datasets: [
-                {
-                    label: 'Plafond OPL',
-                    data: plafond,
-                    backgroundColor: 'rgba(54,162,235,0.7)',
-                    borderColor: 'rgba(54,162,235,1)',
-                    borderWidth: 1,
-                    // barThickness: 30   <-- buang ini biar fleksibel
-                },
-                {
-                    label: 'Transaksi Padi',
-                    data: transaksi,
-                    backgroundColor: 'rgba(255,99,132,0.7)',
-                    borderColor: 'rgba(255,99,132,1)',
-                    borderWidth: 1,
-                    // barThickness: 30
-                }
+                { label: 'Plafond OPL', data: plafond, backgroundColor: 'rgba(54,162,235,0.7)', borderColor: 'rgba(54,162,235,1)', borderWidth: 1 },
+                { label: 'Transaksi Padi', data: transaksi, backgroundColor: 'rgba(255,99,132,0.7)', borderColor: 'rgba(255,99,132,1)', borderWidth: 1 }
             ]
         },
         options: {
@@ -143,8 +180,8 @@ function renderChartPerKebunInSameCard(bulan, tahun) {
                         }
                     },
                     grid: { display: false },
-                    barPercentage: 0.4,       // bar lebih tipis
-                    categoryPercentage: 0.6   // jarak antar bar lebih renggang
+                    barPercentage: 0.4,
+                    categoryPercentage: 0.6
                 },
                 x: {
                     beginAtZero: true,
@@ -152,21 +189,14 @@ function renderChartPerKebunInSameCard(bulan, tahun) {
                     grid: { drawBorder: true, drawTicks: true, color: '#ccc' }
                 }
             },
-            plugins: {
-                legend: { display: true },
-                tooltip: { mode: 'index', intersect: false }
-            }
+            plugins: { legend: { display: true }, tooltip: { mode: 'index', intersect: false } }
         }
     });
-
 
     $('#cardTitle').text(`Transaksi per Kebun Bulan ${bulan} ${tahun}`);
     $('#btnKembaliChart').show();
     $('#tipeGrafikWrapper').hide();
 }
-
-
-
 
 // ========================
 // Tombol kembali
@@ -177,7 +207,7 @@ $('#btnKembaliChart').on('click', function () {
 });
 
 // ========================
-// Chart Pembelian Padi card bawah (dikembalikan seperti awal)
+// Chart Pembelian Padi (card bawah)
 // ========================
 let chartPembelianPadiInstance = null;
 let kebunList = [];
@@ -192,7 +222,10 @@ function renderPembelianChart(kebunFilter) {
     let filtered = pembelianPadiData;
     if (kebunFilter) filtered = pembelianPadiData.filter(item => item.deskripsi === kebunFilter);
 
-    const bulanNama = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const bulanNama = [
+        '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
     const labels = [];
     const values = [];
 
@@ -208,17 +241,23 @@ function renderPembelianChart(kebunFilter) {
 
     chartPembelianPadiInstance = new Chart(ctx2, {
         type: 'bar',
-        data: { labels: labels, datasets: [{ label: kebunFilter ? `Total Transaksi per Bulan (${kebunFilter})` : 'Total Transaksi per Bulan', data: values, backgroundColor: 'rgba(34,139,34,0.5)', borderColor: 'rgba(34,139,34,1)', borderWidth: 2 }] },
+        data: {
+            labels: labels,
+            datasets: [
+                { label: kebunFilter ? `Total Transaksi per Bulan (${kebunFilter})` : 'Total Transaksi per Bulan', data: values, backgroundColor: 'rgba(34,139,34,0.5)', borderColor: 'rgba(34,139,34,1)', borderWidth: 2 }
+            ]
+        },
         options: { responsive: true, maintainAspectRatio: false }
     });
 }
 
 // ========================
-// Load data
+// Load Data
 // ========================
 function loadChartUMKM() {
     $.getJSON('/api/realisasi-padi-umkm', function (data) {
         cacheRealisasiData = data;
+        renderTahunDropdown();
         const tipe = $('#filterTipeGrafik').val() || 'perbandingan';
         renderChartBig1(tipe);
     });
@@ -243,6 +282,13 @@ $('#filterTipeGrafik').on('change', function () {
 
 $(document).on('change', '#filterKebun', function () {
     renderPembelianChart($(this).val());
+});
+
+$(document).on('change', '#filterTahun', function () {
+    selectedTahun = Number($(this).val());
+    const tipe = $('#filterTipeGrafik').val() || 'perbandingan';
+    renderChartBig1(tipe);
+    renderPembelianChart($('#filterKebun').val());
 });
 
 // ========================

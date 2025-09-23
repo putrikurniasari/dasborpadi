@@ -1,4 +1,3 @@
-
 @extends('layouts.app', ['pageSlug' => 'dashboard'])
 
 @section('content')
@@ -12,11 +11,21 @@
                             <h5 class="card-category mb-0">Total Target & Realisasi Anggaran</h5>
                             <h2 class="card-title mb-0" id="cardTitle">Realisasi Padi UMKM</h2>
                         </div>
+
+                        
                         <!-- Tombol di bawah judul -->
                         <div class="mt-2 w-100">
                             <button id="btnKembaliChart" class="btn btn-sm btn-primary" style="display:none;">
                                 Kembali ke Chart UMKM
                             </button>
+                        </div>
+
+                        <!-- Filter Tahun di atas Tipe Grafik -->
+                        <div class="filter-tahun-group mt-2" id="tahunWrapper">
+                            <label for="filterTahun" class="filter-tahun-label">Pilih Tahun:</label>
+                            <select id="filterTahun" class="filter-tahun-select">
+                                <option value="" hidden selected>Pilih Tahun</option>
+                            </select>
                         </div>
                         <!-- Filter tetap di bawah tombol -->
                         <div class="filter-tipegrafik-group mt-2" id="tipeGrafikWrapper">
@@ -66,5 +75,5 @@
             </div>
         </div>
     </div>
-</div>
+    </div>
 @endsection

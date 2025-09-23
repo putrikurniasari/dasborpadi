@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
@@ -24,6 +24,7 @@
 
     @stack('css')
 </head>
+
 <body class="{{ $class ?? '' }}">
     @auth
         <div class="wrapper">
@@ -85,7 +86,9 @@
     <script src="{{ asset('js/plugins/bootstrap-notify.js') }}"></script>
     <script src="{{ asset('js/black-dashboard.min.js') }}"></script>
     <script src="{{ asset('js/theme.js') }}"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
     @stack('js')
 </body>
+
 </html>
