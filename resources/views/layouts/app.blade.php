@@ -14,7 +14,7 @@
 
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css?family=Poppins:200,300,400,600,700,800" rel="stylesheet">
-    <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
+    <!-- <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet"> -->
     <link href="{{ asset('css/nucleo-icons.css') }}" rel="stylesheet">
 
     <!-- CSS -->
@@ -55,28 +55,6 @@
             </div>
         </div>
     @endauth
-
-    <!-- Fixed plugin -->
-    <div class="fixed-plugin">
-        <div class="dropdown show-dropdown">
-            <a href="#" data-toggle="dropdown">
-                <i class="fa fa-cog fa-2x"></i>
-            </a>
-            <ul class="dropdown-menu">
-                <li class="header-title">Ganti Warna Sidebar</li>
-                <li class="adjustments-line">
-                    <a href="javascript:void(0)" class="switch-trigger background-color">
-                        <div class="badge-colors text-center">
-                            <span class="badge filter badge-primary active" data-color="primary"></span>
-                            <span class="badge filter badge-info" data-color="blue"></span>
-                            <span class="badge filter badge-success" data-color="green"></span>
-                        </div>
-                        <div class="clearfix"></div>
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </div>
 
     <!-- Core JS -->
     <script src="{{ asset('js/core/jquery.min.js') }}"></script>

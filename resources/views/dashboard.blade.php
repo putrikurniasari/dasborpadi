@@ -5,29 +5,29 @@
         <div class="col-12">
             <div class="card card-chart">
                 <div class="card-header">
-
                     <div class="d-flex justify-content-between align-items-center filter-header flex-column">
                         <div class="w-100">
                             <h5 class="card-category mb-0">Total Target & Realisasi Anggaran</h5>
                             <h2 class="card-title mb-0" id="cardTitle">Realisasi Padi UMKM</h2>
                         </div>
 
-                        
-                        <!-- Tombol di bawah judul -->
+                        <!-- Tombol kembali -->
                         <div class="mt-2 w-100">
-                            <button id="btnKembaliChart" class="btn btn-sm btn-primary" style="display:none;">
-                                Kembali ke Chart UMKM
+                            <button id="btnKembaliChart" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa fa-arrow-left"></i>
                             </button>
+
                         </div>
 
-                        <!-- Filter Tahun di atas Tipe Grafik -->
+                        <!-- Filter Tahun -->
                         <div class="filter-tahun-group mt-2" id="tahunWrapper">
                             <label for="filterTahun" class="filter-tahun-label">Pilih Tahun:</label>
                             <select id="filterTahun" class="filter-tahun-select">
                                 <option value="" hidden selected>Pilih Tahun</option>
                             </select>
                         </div>
-                        <!-- Filter tetap di bawah tombol -->
+
+                        <!-- Filter Tipe Grafik -->
                         <div class="filter-tipegrafik-group mt-2" id="tipeGrafikWrapper">
                             <label for="filterTipeGrafik" class="filter-tipegrafik-label">Tipe Grafik:</label>
                             <select id="filterTipeGrafik" class="filter-tipegrafik-select">
@@ -38,10 +38,9 @@
                             </select>
                         </div>
                     </div>
-
                 </div>
                 <div class="card-body">
-                    <div class="chart-area">
+                    <div class="chart-area" id="chartBig1Wrapper">
                         <canvas id="chartBig1"></canvas>
                     </div>
                 </div>
@@ -49,24 +48,44 @@
         </div>
     </div>
 
-    <!-- Card bawah tetap sama -->
+    <!-- Card bawah -->
     <div class="row mt-4">
         <div class="col-12">
             <div class="card card-chart">
                 <div class="card-header">
-                    <div class="d-flex justify-content-between align-items-center filter-header">
+                    <div class="d-flex justify-content-between align-items-center filter-header w-100">
+
                         <div>
                             <h5 class="card-category mb-0">Total Transaksi Padi</h5>
                             <h2 class="card-title mb-0">Transaksi Padi per Kebun</h2>
                         </div>
-                        <div class="form-group mb-0 filter-kebun-group">
-                            <label for="filterKebun" class="filter-kebun-label">Filter Kebun:</label>
-                            <select id="filterKebun" class="filter-kebun-select">
-                                <option value="" hidden selected>Pilih Kebun</option>
-                            </select>
+                        <div class="d-flex gap-3 align-items-center">
+                            <!-- Filter Tahun (kanan atas) -->
+                            <div class="filter-tahun-group mb-0" id="tahunWrapper2">
+                                <label for="filterTahun2" class="filter-tahun-label">Tahun:</label>
+                                <select id="filterTahun2" class="filter-tahun-select">
+                                    <option value="" hidden selected>Pilih Tahun</option>
+                                </select>
+                            </div>
+
+                            <!-- Filter Kebun -->
+                            <div class="filter-kebun-group mb-0">
+                                <label for="filterKebun" class="filter-kebun-label">Kebun:</label>
+                                <select id="filterKebun" class="filter-kebun-select">
+                                    <option value="" hidden selected>Pilih Kebun</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
+                    <!-- Tombol kembali -->
+                        <div class="mt-2 w-100">
+                            <button id="btnKembaliChart2" class="btn btn-sm btn-outline-secondary">
+                                <i class="fa fa-arrow-left"></i>
+                            </button>
+
+                        </div>
                 </div>
+
                 <div class="card-body">
                     <div class="chart-area">
                         <canvas id="chartPembelianPadi"></canvas>
@@ -74,6 +93,5 @@
                 </div>
             </div>
         </div>
-    </div>
     </div>
 @endsection
