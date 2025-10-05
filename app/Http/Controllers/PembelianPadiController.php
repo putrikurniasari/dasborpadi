@@ -24,44 +24,39 @@ class PembelianPadiController extends Controller
             'file_excel' => 'required|mimes:xlsx,xls|max:2048'
         ]);
 
+        // Simpan file ke storage/app/public/excel
         $file = $request->file('file_excel');
+        $originalName = $file->getClientOriginalName();
+        $cleanName = preg_replace('/\s+/', '_', $originalName);
+        $path = $file->storeAs('excel', $cleanName, 'public');
 
-        // 1️⃣ Simpan file ke storage dulu
-        $path = $file->store('excel', 'public');
-        $fullPath = storage_path('app/public/' . $path);
-
-        // 2️⃣ Import data dari sheet "Fix" (baris 3 ke bawah)
-        $collections = Excel::toCollection(null, $fullPath)->onlySheets('Fix');
-        $rows = $collections->first(); // ambil sheet Fix
-
-        foreach ($rows as $index => $row) {
-            if ($index < 2) continue; // skip baris 1-2
-            if (empty($row[0])) continue; // skip kalau kode kosong
-
-            DB::table('pembelian_padi')->insert([
-                'kode' => $row[0],
-                'deskripsi' => $row[1],
-                'plafond_opl' => is_numeric($row[2]) ? $row[2] : (int) str_replace(',', '', $row[2]),
-                'transaksi_local' => ($row[3] == '-' ? 0 : (int) str_replace(',', '', $row[3])),
-                'transaksi_padi' => (int) str_replace(',', '', $row[4]),
-                'transaksi_padi_sd' => (int) str_replace(',', '', $row[5]),
-                'persen_terhadap_plafond' => floatval(str_replace('%', '', $row[6])),
-                'status_user' => $row[7],
-                'bulan' => null,
-                'tahun' => null,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
-
-        // 3️⃣ Simpan metadata ke tabel excel_transaksi
+        // Simpan metadata ke tabel excel_transaksi
         DB::table('excel_transaksi')->insert([
             'tanggal_input' => now()->toDateString(),
-            'file_excel' => $path,
-            'created_at' => now(),
-            'updated_at' => now(),
+            'file_excel'    => $path,
+            'created_at'    => now(),
+            'updated_at'    => now(),
         ]);
 
-        return redirect()->back()->with('success', 'Data dari sheet Fix berhasil diimport ke tabel pembelian_padi!');
+        return redirect()->back()->with('success', 'File berhasil diupload!');
+    }
+    public function destroy($id)
+    {
+        // Ambil data file dari database
+        $file = DB::table('excel_transaksi')->where('id', $id)->first();
+
+        if (!$file) {
+            return redirect()->back()->with('error', 'File tidak ditemukan!');
+        }
+
+        // Hapus file dari storage jika masih ada
+        if (\Storage::disk('public')->exists($file->file_excel)) {
+            \Storage::disk('public')->delete($file->file_excel);
+        }
+
+        // Hapus data dari database
+        DB::table('excel_transaksi')->where('id', $id)->delete();
+
+        return redirect()->back()->with('success', 'File berhasil dihapus!');
     }
 }

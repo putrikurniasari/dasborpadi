@@ -447,12 +447,13 @@ function renderPembelianChart(kebunFilter, tahunFilter) {
                     const tahunDipakai = lastTahunPembelianDipilih;
                     const kebunDipilih = $('#filterKebun').val();
                     renderPembelianPerKebun(bulan, tahunDipakai, kebunDipilih);
-                }
+                } 
             }
         }
     });
 
     $('#btnKembaliChart2').hide();
+    
 }
 
 
@@ -519,7 +520,7 @@ function renderPembelianPerKebun(bulan, tahun, kebunFilter) {
 
     const namaBulan = bulanNama[bulan] || bulan;
 
-    // === Ubah judul card bawah ===
+    // === Ubah judul ===
     $('#chartPembelianPadi').closest('.card').find('.card-title').text(
         `Rekap Pembelian Padi ${kebunFilter ? kebunFilter : ''} Bulan ${namaBulan} ${tahun}`
     );

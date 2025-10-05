@@ -28,7 +28,7 @@ class RealisasiPadiUmkmController extends Controller
             ->where('bulan', $bulan)
             ->where('tahun', $tahun);
 
-        if($kebun){
+        if ($kebun) {
             $query->where('deskripsi', $kebun);
         }
 
@@ -44,16 +44,39 @@ class RealisasiPadiUmkmController extends Controller
         ]);
 
         // Simpan file ke storage/app/public/excel
-        $path = $request->file('file_excel')->store('excel', 'public');
+        $file = $request->file('file_excel');
+        $originalName = $file->getClientOriginalName();
+        $cleanName = preg_replace('/\s+/', '_', $originalName);
+        $path = $file->storeAs('excel', $cleanName, 'public');
 
         // Simpan metadata ke tabel excel_transaksi
         DB::table('excel_realisasi')->insert([
             'tanggal_input' => now()->toDateString(),
-            'file_excel'    => $path,
-            'created_at'    => now(),
-            'updated_at'    => now(),
+            'file_excel' => $path,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         return redirect()->back()->with('success', 'File berhasil diupload!');
     }
+    public function destroy($id)
+    {
+        // Ambil data file dari database
+        $file = DB::table('excel_realisasi')->where('id', $id)->first();
+
+        if (!$file) {
+            return redirect()->back()->with('error', 'File tidak ditemukan!');
+        }
+
+        // Hapus file dari storage jika masih ada
+        if (\Storage::disk('public')->exists($file->file_excel)) {
+            \Storage::disk('public')->delete($file->file_excel);
+        }
+
+        // Hapus data dari database
+        DB::table('excel_realisasi')->where('id', $id)->delete();
+
+        return redirect()->back()->with('success', 'File berhasil dihapus!');
+    }
+
 }
