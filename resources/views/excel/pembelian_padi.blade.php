@@ -30,7 +30,7 @@
                     {{-- Form upload --}}
                     <div class="collapse mt-3" id="formUploadExcel">
                         <div class="card card-body border shadow-sm p-4">
-                            <form action="{{ route('upload.realisasi') }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('upload.pembelian') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row">
                                     {{-- Input Bulan --}}
@@ -97,7 +97,7 @@
                     <hr>
 
                     {{-- Tabel daftar file --}}
-                    <h5 class="mt-4">Daftar File Realisasi UMKM</h5>
+                    <h5 class="mt-4">Daftar File Pembelian Padi</h5>
                     <table class="table table-bordered table-dark table-striped align-middle">
                         <thead>
                             <tr>
@@ -119,7 +119,7 @@
                                                 class="btn btn-sm btn-info w-100">
                                                 <i class="fa fa-download"></i> Download
                                             </a>
-                                            <form action="{{ route('delete.realisasi', $file->id) }}" method="POST"
+                                            <form action="{{ route('delete.transaksi', $file->id) }}" method="POST"
                                                 onsubmit="return confirm('Yakin ingin menghapus file ini?');">
                                                 @csrf
                                                 @method('DELETE')

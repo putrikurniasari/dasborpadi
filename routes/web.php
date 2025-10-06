@@ -25,6 +25,7 @@ Route::post('/register', [RegisterController::class, 'register']);
 Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/transaksi-padi', [PembelianPadiController::class, 'getByBulan']);
 Route::delete('/realisasi/{id}', [RealisasiPadiUmkmController::class, 'destroy'])->name('delete.realisasi');
+Route::delete('/transaksi/{id}', [PembelianPadiController::class, 'destroy'])->name('delete.transaksi');
 
 
 // Password reset

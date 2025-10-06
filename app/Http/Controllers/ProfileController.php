@@ -8,7 +8,7 @@ use App\Http\Requests\PasswordRequest;
 
 class ProfileController extends Controller
 {
-    /**
+    /**eb
      * Show the form for editing the profile.
      *
      * @return \Illuminate\View\View

@@ -14,5 +14,7 @@ class ExcelTransaksi extends Model
     protected $fillable = [
         'tanggal_input',
         'file_excel',
+        'bulan',
+        'tahun',
     ];
 }

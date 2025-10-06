@@ -14,6 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->date('tanggal_input');      // tanggal input
             $table->string('file_excel');       // path/nama file excel
+            $table->integer('bulan');      
+            $table->integer('tahun');      
             $table->timestamps();
         });
     }

@@ -21,6 +21,8 @@ class PembelianPadiController extends Controller
     public function uploadPembelian(Request $request)
     {
         $request->validate([
+            'bulan' => 'required|integer|min:1|max:12',
+            'tahun' => 'required|integer|min:2000|max:2100',
             'file_excel' => 'required|mimes:xlsx,xls|max:2048'
         ]);
 
@@ -32,6 +34,8 @@ class PembelianPadiController extends Controller
 
         // Simpan metadata ke tabel excel_transaksi
         DB::table('excel_transaksi')->insert([
+            'bulan' => $request->bulan,
+            'tahun' => $request->tahun,
             'tanggal_input' => now()->toDateString(),
             'file_excel'    => $path,
             'created_at'    => now(),
