@@ -19,7 +19,13 @@ return new class extends Migration {
             $table->string('status_user');
             $table->integer('bulan');
             $table->integer('tahun');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+
+            // ✅ Tambahkan foreign key
+            $table->foreign('excel_id')
+                ->references('id')
+                ->on('excel_transaksi')
+                ->onDelete('cascade'); // biar kalau excel_transaksi dihapus, data ini ikut hilang
         });
     }
 

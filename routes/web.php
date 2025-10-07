@@ -17,7 +17,6 @@ use App\Http\Controllers\ExcelController;
 Route::get('/', fn() => redirect()->route('login'));
 
 Route::get('/home', fn() => redirect()->route('dashboard'))->name('home');
-
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::get('/register', [RegisterController::class, 'showRegisterForm'])->name('register');
@@ -40,9 +39,9 @@ Route::post('/password/email', fn() => back()->with('status', 'Link reset passwo
 */
 Route::prefix('profile')->group(function () {
     Route::get('/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::post('/update', [ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/password', [ProfileController::class, 'password'])->name('profile.password');
+    Route::put('/update', [ProfileController::class, 'update'])->name('profile.update');
 });
+
 
 /*
 |--------------------------------------------------------------------------

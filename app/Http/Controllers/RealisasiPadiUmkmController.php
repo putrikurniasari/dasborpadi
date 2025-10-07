@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use Illuminate\Support\Facades\Storage;
 
 class RealisasiPadiUmkmController extends Controller
 {
@@ -15,28 +17,7 @@ class RealisasiPadiUmkmController extends Controller
             ->get();
         return response()->json($data);
     }
-
-    // Endpoint untuk mengambil transaksi per kebun berdasarkan bulan & tahun
-    public function getByBulan(Request $request)
-    {
-        $bulan = $request->bulan; // 1-12
-        $tahun = $request->tahun; // 2025, dsb
-        $kebun = $request->kebun ?? null; // optional filter kebun
-
-        $query = DB::table('pembelian_padi')
-            ->select('deskripsi as kebun', 'plafond_opl', 'transaksi_padi')
-            ->where('bulan', $bulan)
-            ->where('tahun', $tahun);
-
-        if ($kebun) {
-            $query->where('deskripsi', $kebun);
-        }
-
-        $data = $query->get();
-
-        return response()->json($data);
-    }
-
+    
     public function uploadRealisasi(Request $request)
     {
         $request->validate([
@@ -45,14 +26,24 @@ class RealisasiPadiUmkmController extends Controller
             'file_excel' => 'required|mimes:xlsx,xls|max:2048'
         ]);
 
-        // Simpan file ke storage/app/public/excel
+        // === CEK apakah data dengan bulan & tahun ini sudah ada ===
+        $sudahAda = DB::table('excel_realisasi')
+            ->where('bulan', $request->bulan)
+            ->where('tahun', $request->tahun)
+            ->exists();
+
+        if ($sudahAda) {
+            return redirect()->back()->with('error', 'Data untuk bulan dan tahun ini sudah ada. Silakan hapus data lama terlebih dahulu sebelum upload kembali.');
+        }
+
+        // === Simpan file ke storage ===
         $file = $request->file('file_excel');
         $originalName = $file->getClientOriginalName();
         $cleanName = preg_replace('/\s+/', '_', $originalName);
         $path = $file->storeAs('excel', $cleanName, 'public');
 
-        // Simpan metadata ke tabel excel_transaksi
-        DB::table('excel_realisasi')->insert([
+        // === Simpan metadata file ke tabel excel_realisasi ===
+        $excelId = DB::table('excel_realisasi')->insertGetId([
             'bulan' => $request->bulan,
             'tahun' => $request->tahun,
             'tanggal_input' => now()->toDateString(),
@@ -61,8 +52,44 @@ class RealisasiPadiUmkmController extends Controller
             'updated_at' => now(),
         ]);
 
-        return redirect()->back()->with('success', 'File berhasil diupload!');
+        // === Baca file Excel ===
+        $spreadsheet = IOFactory::load(storage_path('app/public/' . $path));
+
+        // Gunakan sheet "KERTAS KERJA"
+        $sheet = $spreadsheet->getSheetByName('KERTAS KERJA');
+
+        if (!$sheet) {
+            return redirect()->back()->with('error', 'Sheet "KERTAS KERJA" tidak ditemukan dalam file Excel.');
+        }
+
+        // Ambil data dari sel
+        $perusahaan = $sheet->getCell('C6')->getCalculatedValue();
+        $target_tahun = $sheet->getCell('F6')->getCalculatedValue();
+        $target_sd_bulan = $sheet->getCell('G6')->getCalculatedValue();
+        $realisasi_sd_bulan = $sheet->getCell('H6')->getCalculatedValue();
+        $sisa_target = $sheet->getCell('I6')->getCalculatedValue();
+        $selisih_rp = $sheet->getCell('J6')->getCalculatedValue();
+        $persentase_capaian = $sheet->getCell('K6')->getCalculatedValue();
+
+        // === Simpan data ke tabel realisasi_padi_umkm ===
+        DB::table('realisasi_padi_umkm')->insert([
+            'excel_id' => $excelId, // tambahkan relasi agar tahu asal file-nya
+            'perusahaan' => $perusahaan,
+            'tahun' => $request->tahun,
+            'bulan' => $request->bulan,
+            'target_tahun' => $target_tahun,
+            'target_sd_bulan' => $target_sd_bulan,
+            'realisasi_sd_bulan' => $realisasi_sd_bulan,
+            'sisa_target' => $sisa_target,
+            'selisih_rp' => $selisih_rp,
+            'persentase_capaian' => $persentase_capaian,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'File berhasil diupload dan data tersimpan!');
     }
+
     public function destroy($id)
     {
         // Ambil data file dari database
@@ -72,15 +99,20 @@ class RealisasiPadiUmkmController extends Controller
             return redirect()->back()->with('error', 'File tidak ditemukan!');
         }
 
-        // Hapus file dari storage jika masih ada
-        if (\Storage::disk('public')->exists($file->file_excel)) {
-            \Storage::disk('public')->delete($file->file_excel);
+        // Hapus file dari storage
+        if (Storage::disk('public')->exists($file->file_excel)) {
+            Storage::disk('public')->delete($file->file_excel);
         }
 
-        // Hapus data dari database
+        // Hapus data realisasi_padi_umkm yang terkait
+        DB::table('realisasi_padi_umkm')
+            ->where('excel_id', $id)
+            ->delete();
+
+        // Hapus metadata file
         DB::table('excel_realisasi')->where('id', $id)->delete();
 
-        return redirect()->back()->with('success', 'File berhasil dihapus!');
+        return redirect()->back()->with('success', 'File dan data realisasi berhasil dihapus!');
     }
 
 }

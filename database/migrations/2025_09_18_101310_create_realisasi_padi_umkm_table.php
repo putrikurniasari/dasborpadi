@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('realisasi_padi_umkm', function (Blueprint $table) {
@@ -20,6 +19,12 @@ return new class extends Migration
             $table->bigInteger('selisih_rp')->nullable();
             $table->decimal('persentase_capaian', 6, 2)->nullable();
             $table->timestamp('created_at')->useCurrent();
+
+            // ✅ Tambahkan foreign key
+            $table->foreign('excel_id')
+                ->references('id')
+                ->on('excel_realisasi')
+                ->onDelete('cascade'); // biar kalau excel_transaksi dihapus, data ini ikut hilang
         });
     }
 

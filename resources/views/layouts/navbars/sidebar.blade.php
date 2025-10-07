@@ -1,4 +1,4 @@
-<div class="sidebar">
+<div class="sidebar animate__animated animate__slideInLeft">
     <div class="sidebar-wrapper">
         <div class="logo" style="text-align:center;">
             <a href="#" class="simple-text logo-normal">{{ __('MONITORING PADI') }}</a>

@@ -3,44 +3,49 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Hash;
-use App\Http\Requests\ProfileRequest;
-use App\Http\Requests\PasswordRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProfileController extends Controller
 {
-    /**eb
-     * Show the form for editing the profile.
-     *
-     * @return \Illuminate\View\View
-     */
     public function edit()
     {
-        return view('profile.edit');
+        // Ambil data user yang sedang login dari tabel tb_users
+        $user = DB::table('tb_users')->where('id', Auth::id())->first();
+
+        return view('profile.edit', compact('user'));
     }
 
-    /**
-     * Update the profile
-     *
-     * @param  \App\Http\Requests\ProfileRequest  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function update(ProfileRequest $request)
+    public function update(Request $request)
     {
-        auth()->user()->update($request->all());
+        $request->validate([
+            'username' => 'required|string|max:255|unique:tb_users,username,' . Auth::id(),
+            'old_password' => 'nullable|required_with:password|string',
+            'password' => 'nullable|confirmed|min:6',
+        ]);
 
-        return back()->withStatus(__('Profile successfully updated.'));
-    }
+        $user = DB::table('tb_users')->where('id', Auth::id())->first();
 
-    /**
-     * Change the password
-     *
-     * @param  \App\Http\Requests\PasswordRequest  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
-    public function password(PasswordRequest $request)
-    {
-        auth()->user()->update(['password' => Hash::make($request->get('password'))]);
+        if (!$user) {
+            return back()->with('error', 'Data pengguna tidak ditemukan.');
+        }
 
-        return back()->withPasswordStatus(__('Password successfully updated.'));
+        // Siapkan data yang akan diupdate
+        $updateData = [
+            'username' => $request->username,
+        ];
+
+        // Jika user ingin mengubah password
+        if ($request->filled('old_password')) {
+            if (!Hash::check($request->old_password, $user->password)) {
+                return back()->with('error', 'Password lama tidak sesuai.');
+            }
+            $updateData['password'] = Hash::make($request->password);
+        }
+
+        DB::table('tb_users')->where('id', Auth::id())->update($updateData);
+
+        return back()->with('success', 'Profil berhasil diperbarui!');
     }
 }

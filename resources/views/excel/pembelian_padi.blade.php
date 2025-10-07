@@ -1,9 +1,25 @@
 @extends('layouts.app', ['pageSlug' => 'pembelian-padi'])
 
+@php
+    $namaBulan = [
+        1 => 'Januari',
+        2 => 'Februari',
+        3 => 'Maret',
+        4 => 'April',
+        5 => 'Mei',
+        6 => 'Juni',
+        7 => 'Juli',
+        8 => 'Agustus',
+        9 => 'September',
+        10 => 'Oktober',
+        11 => 'November',
+        12 => 'Desember'
+    ];
+@endphp
 @section('content')
     <div class="row">
         <div class="col-12">
-            <div class="card card-chart">
+            <div class="card card-chart animate__animated animate__fadeInUp">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center filter-header">
                         <div>
@@ -20,12 +36,19 @@
 
                 <div class="card-body">
 
-                    {{-- Notifikasi sukses --}}
+                    {{-- Notifikasi sukses & error --}}
                     @if(session('success'))
-                        <div class="alert alert-success">
+                        <div class="alert alert-success alert-dismissible fade show mt-2" role="alert" id="alertMessage">
                             {{ session('success') }}
                         </div>
                     @endif
+
+                    @if(session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert" id="alertMessage">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
 
                     {{-- Form upload --}}
                     <div class="collapse mt-3" id="formUploadExcel">
@@ -103,7 +126,9 @@
                             <tr>
                                 <th style="width: 60px;">No</th>
                                 <th>Nama File</th>
-                                <th style="width: 200px;">Tanggal Upload</th>
+                                <th>Bulan</th>
+                                <th>Tahun</th>
+                                <!-- <th style="width: 200px;">Tanggal Upload</th> -->
                                 <th style="width: 180px;" class="text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -112,21 +137,27 @@
                                 <tr>
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ basename($file->file_excel) }}</td>
-                                    <td>{{ $file->tanggal_input }}</td>
+                                    <td>{{ $namaBulan[$file->bulan] ?? '-' }}</td>
+                                    <td>{{ $file->tahun }}</td>
+                                    <!-- <td>{{ $file->tanggal_input }}</td> -->
                                     <td class="text-center">
                                         <div class="d-flex flex-column gap-2">
                                             <a href="{{ asset('storage/' . $file->file_excel) }}" target="_blank"
                                                 class="btn btn-sm btn-info w-100">
                                                 <i class="fa fa-download"></i> Download
                                             </a>
-                                            <form action="{{ route('delete.transaksi', $file->id) }}" method="POST"
-                                                onsubmit="return confirm('Yakin ingin menghapus file ini?');">
+                                            <button type="button" class="btn btn-sm btn-danger w-100"
+                                                onclick="confirmDelete({{ $file->id }})">
+                                                <i class="fa fa-trash"></i> Hapus
+                                            </button>
+
+                                            <form id="delete-form-{{ $file->id }}"
+                                                action="{{ route('delete.transaksi', $file->id) }}" method="POST"
+                                                class="d-none">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger w-100">
-                                                    <i class="fa fa-trash"></i> Hapus
-                                                </button>
                                             </form>
+
                                         </div>
                                     </td>
 
@@ -158,6 +189,67 @@
             });
         });
     </script>
+
+    <script>
+        // Auto hide alert dalam 5 detik
+        setTimeout(() => {
+            const alertEl = document.getElementById('alertMessage');
+            if (alertEl) {
+                // Tambahkan efek fade-out halus
+                alertEl.style.transition = "opacity 0.5s ease";
+                alertEl.style.opacity = "0";
+                setTimeout(() => alertEl.remove(), 500); // hapus dari DOM
+            }
+        }, 5000); // waktu tampil 5 detik
+    </script>
+
+
+    @push('js')
+        <script>
+            // === Loading SweetAlert saat form upload ===
+            document.addEventListener("DOMContentLoaded", function () {
+                const formUpload = document.querySelector('form[action="{{ route('upload.pembelian') }}"]');
+                if (formUpload) {
+                    formUpload.addEventListener('submit', function (e) {
+                        Swal.fire({
+                            title: 'Sedang Mengupload data pembelian padi...',
+                            html: 'Mohon tunggu beberapa saat',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                    });
+                }
+            });
+
+            // === Konfirmasi Hapus ===
+            window.confirmDelete = function (id) {
+                Swal.fire({
+                    title: 'Yakin ingin menghapus?',
+                    text: 'Data Pembelian Padi yang terkait dengan file ini juga akan dihapus.',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Ya, Hapus!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById(`delete-form-${id}`).submit();
+                        Swal.fire({
+                            title: 'Sedang menghapus data pembelian padi...',
+                            html: 'Mohon tunggu beberapa saat',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                    }
+                });
+            }
+        </script>
+    @endpush
 
     {{-- === Styling dark mode untuk dropdown, input tahun, dan tabel === --}}
     <style>
@@ -241,4 +333,5 @@
             background-color: #c13d3d;
         }
     </style>
+
 @endsection

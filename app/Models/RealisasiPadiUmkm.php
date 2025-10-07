@@ -12,6 +12,7 @@ class RealisasiPadiUmkm extends Model
     protected $table = 'realisasi_padi_umkm';
 
     protected $fillable = [
+        'excel_id',
         'perusahaan',
         'tahun',
         'bulan',

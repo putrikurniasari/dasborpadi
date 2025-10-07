@@ -12,6 +12,7 @@ class PembelianPadi extends Model
     protected $table = 'pembelian_padi';
 
     protected $fillable = [
+        'excel_id',
         'kode',
         'deskripsi',
         'plafond_opl',
@@ -24,5 +25,5 @@ class PembelianPadi extends Model
         'tahun',
     ];
 
-    public $timestamps = true; // karena migration ada timestamps()
+    public $timestamps = false; // karena migration ada timestamps()
 }

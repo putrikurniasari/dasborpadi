@@ -3,7 +3,7 @@
 @section('content')
     <div class="row">
         <div class="col-12">
-            <div class="card card-chart">
+            <div class="card card-chart animate__animated animate__fadeInUp">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center filter-header flex-column">
                         <div class="w-100">
@@ -20,15 +20,15 @@
                         </div>
 
                         <!-- Filter Tahun -->
-                        <div class="filter-tahun-group mt-2" id="tahunWrapper">
+                        <!-- <div class="filter-tahun-group mt-2" id="tahunWrapper">
                             <label for="filterTahun" class="filter-tahun-label">Pilih Tahun:</label>
                             <select id="filterTahun" class="filter-tahun-select">
                                 <option value="" hidden selected>Pilih Tahun</option>
                             </select>
-                        </div>
+                        </div> -->
 
                         <!-- Filter Tipe Grafik -->
-                        <div class="filter-tipegrafik-group mt-2" id="tipeGrafikWrapper">
+                        <!-- <div class="filter-tipegrafik-group mt-2" id="tipeGrafikWrapper">
                             <label for="filterTipeGrafik" class="filter-tipegrafik-label">Tipe Grafik:</label>
                             <select id="filterTipeGrafik" class="filter-tipegrafik-select">
                                 <option value="" hidden selected>Pilih Tipe Grafik</option>
@@ -36,7 +36,7 @@
                                 <option value="realisasi">Realisasi</option>
                                 <option value="target">Target</option>
                             </select>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="card-body">
@@ -51,7 +51,7 @@
     <!-- Card bawah -->
     <div class="row mt-4">
         <div class="col-12">
-            <div class="card card-chart">
+            <div class="card card-chart animate__animated animate__fadeInUp">
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center filter-header w-100">
 

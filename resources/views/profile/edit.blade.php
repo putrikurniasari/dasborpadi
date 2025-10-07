@@ -1,60 +1,123 @@
-
 @extends('layouts.app', ['page' => __('User Profile'), 'pageSlug' => 'profile'])
 
 @section('content')
-<div class="row">
-    <div class="col-md-12">
-        <!-- Card User Profile -->
-        <div class="card mb-4">
-            <div class="card-body text-center">
-                <img class="avatar mb-3" src="{{ asset('black') }}/img/emilyz.jpg" alt="Profile Photo" style="width:100px; height:100px; border-radius:50%; object-fit:cover;">
-                <h4 class="mb-1">{{ auth()->user()->name }}</h4>
-                <p class="mb-1">{{ auth()->user()->email }}</p>
-            </div>
-        </div>
-        <!-- Card Edit Profile & Password -->
-        <div class="card">
-            <div class="card-header">
-                <h5 class="title">{{ __('Edit Profile') }}</h5>
-            </div>
-            <form method="post" action="{{ route('profile.update') }}" autocomplete="off">
-                <div class="card-body">
-                    @csrf
-                    @method('put')
-                    @include('alerts.success')
-                    <div class="form-group{{ $errors->has('name') ? ' has-danger' : '' }}">
-                        <label>{{ __('Name') }}</label>
-                        <input type="text" name="name" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" placeholder="{{ __('Name') }}" value="{{ old('name', auth()->user()->name) }}">
-                        @include('alerts.feedback', ['field' => 'name'])
-                    </div>
-                    <div class="form-group{{ $errors->has('email') ? ' has-danger' : '' }}">
-                        <label>{{ __('Email address') }}</label>
-                        <input type="email" name="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" placeholder="{{ __('Email address') }}" value="{{ old('email', auth()->user()->email) }}">
-                        @include('alerts.feedback', ['field' => 'email'])
-                    </div>
-                    <hr>
-                    <h5 class="mb-3">{{ __('Change Password') }}</h5>
-                    @include('alerts.success', ['key' => 'password_status'])
-                    <div class="form-group{{ $errors->has('old_password') ? ' has-danger' : '' }}">
-                        <label>{{ __('Current Password') }}</label>
-                        <input type="password" name="old_password" class="form-control{{ $errors->has('old_password') ? ' is-invalid' : '' }}" placeholder="{{ __('Current Password') }}" required>
-                        @include('alerts.feedback', ['field' => 'old_password'])
-                    </div>
-                    <div class="form-group{{ $errors->has('password') ? ' has-danger' : '' }}">
-                        <label>{{ __('New Password') }}</label>
-                        <input type="password" name="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" placeholder="{{ __('New Password') }}" required>
-                        @include('alerts.feedback', ['field' => 'password'])
-                    </div>
-                    <div class="form-group">
-                        <label>{{ __('Confirm New Password') }}</label>
-                        <input type="password" name="password_confirmation" class="form-control" placeholder="{{ __('Confirm New Password') }}" required>
-                    </div>
+    <div class="row">
+        <div class="col-md-12 animate__animated animate__fadeInUp">
+            <div class="card shadow-lg" style="background: #23243a; border: 1px solid #35376c;">
+                <div class="card-header text-center">
+                    <h4 class="title text-light mb-0">{{ __('Edit Profil Pengguna') }}</h4>
                 </div>
-                <div class="card-footer d-flex justify-content-end">
-                    <button type="submit" class="btn btn-fill btn-primary">{{ __('Save Changes') }}</button>
-                </div>
-            </form>
+
+                <form method="post" action="{{ route('profile.update') }}" autocomplete="off">
+                    <div class="card-body">
+                        @csrf
+                        @method('put')
+
+                        {{-- Alert Success/Error --}}
+                        @if(session('success'))
+                            <div class="alert alert-success text-center" id="alert-box">
+                                {{ session('success') }}
+                            </div>
+                        @elseif(session('error'))
+                            <div class="alert alert-danger text-center" id="alert-box">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        <div class="form-group mb-3">
+                            <label style="color:#a3aed6;">Username</label>
+                            <input type="text" name="username"
+                                class="form-control{{ $errors->has('username') ? ' is-invalid' : '' }}"
+                                placeholder="Username" value="{{ old('username', $user->username ?? '') }}" required>
+                            @include('alerts.feedback', ['field' => 'username'])
+                        </div>
+
+                        <hr style="border-color:#35376c;">
+                        <h5 class="mb-3 text-center" style="color:#e14eca;">Ganti Password</h5>
+
+                        <div class="form-group mb-3">
+                            <label style="color:#a3aed6;">Password Lama</label>
+                            <input type="password" name="old_password"
+                                class="form-control{{ $errors->has('old_password') ? ' is-invalid' : '' }}"
+                                placeholder="Masukkan password lama">
+                            @include('alerts.feedback', ['field' => 'old_password'])
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label style="color:#a3aed6;">Password Baru</label>
+                            <input type="password" name="password"
+                                class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}"
+                                placeholder="Password baru">
+                            @include('alerts.feedback', ['field' => 'password'])
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label style="color:#a3aed6;">Konfirmasi Password Baru</label>
+                            <input type="password" name="password_confirmation" class="form-control"
+                                placeholder="Ulangi password baru">
+                        </div>
+                    </div>
+
+                    <div class="card-footer d-flex justify-content-end">
+                        <button type="button" id="btn-submit" class="btn btn-fill btn-primary" style="background: linear-gradient(90deg,#e14eca 60%,#23243a 100%);
+                           border:none; border-radius:8px;">
+                            {{ __('Simpan Perubahan') }}
+                        </button>
+                    </div>
+
+                </form>
+            </div>
         </div>
     </div>
-</div>
+
+    {{-- Auto hide alert setelah 5 detik --}}
+    <script>
+        setTimeout(() => {
+            const alertBox = document.getElementById('alert-box');
+            if (alertBox) {
+                alertBox.style.transition = 'opacity 0.5s ease';
+                alertBox.style.opacity = '0';
+                setTimeout(() => alertBox.remove(), 500);
+            }
+        }, 5000);
+    </script>
+
+    <script>
+        // Auto hide alert setelah 5 detik
+        setTimeout(() => {
+            const alertBox = document.getElementById('alert-box');
+            if (alertBox) {
+                alertBox.style.transition = 'opacity 0.5s ease';
+                alertBox.style.opacity = '0';
+                setTimeout(() => alertBox.remove(), 500);
+            }
+        }, 5000);
+
+        // SweetAlert konfirmasi sebelum submit
+        document.getElementById('btn-submit').addEventListener('click', function () {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: 'Perubahan profil akan disimpan.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, simpan!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.querySelector('form').submit();
+                    Swal.fire({
+                            title: 'Sedang Mengubah Profil...',
+                            html: 'Mohon tunggu beberapa saat',
+                            allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                }
+            });
+        });
+    </script>
+
 @endsection
