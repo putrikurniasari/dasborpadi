@@ -22,8 +22,7 @@ class RealisasiPadiUmkm extends Model
         'sisa_target',
         'selisih_rp',
         'persentase_capaian',
-        'created_at',
     ];
 
-    public $timestamps = false; // tabel ini cuma ada created_at
+    public $timestamps = true; // tabel ini cuma ada created_at
 }

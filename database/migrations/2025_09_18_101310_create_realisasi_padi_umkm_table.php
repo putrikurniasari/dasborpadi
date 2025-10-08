@@ -8,7 +8,9 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('realisasi_padi_umkm', function (Blueprint $table) {
+            $table->engine='InnoDB';
             $table->id();
+            $table->unsignedBigInteger('excel_id');
             $table->string('perusahaan', 100);
             $table->integer('tahun');
             $table->tinyInteger('bulan');
@@ -18,7 +20,7 @@ return new class extends Migration {
             $table->bigInteger('sisa_target')->nullable();
             $table->bigInteger('selisih_rp')->nullable();
             $table->decimal('persentase_capaian', 6, 2)->nullable();
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
 
             // ✅ Tambahkan foreign key
             $table->foreign('excel_id')

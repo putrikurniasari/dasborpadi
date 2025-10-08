@@ -58,28 +58,48 @@ class PembelianPadiController extends Controller
         $sheet = $spreadsheet->getSheetByName('Fix');
 
         if (!$sheet) {
-            return redirect()->back()->with('error', 'Sheet "Fix" tidak ditemukan dalam file Excel.');
+            // Hapus file dari storage
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+
+            // Hapus data Pembelian padi (kalau ada yang terkait)
+            DB::table('pembelian_padi')->where('excel_id', $excelId)->delete();
+
+            // Hapus metadata excel_realisasi
+            DB::table('excel_realisasi')->where('id', $excelId)->delete();
+
+            return redirect()->back()->with('error', 'File Excel yang diunggah tidak sesuai dengan template.
+            Pastikan data di sheet “Fix” sesuai format template yang telah ditentukan.');
         }
 
         // === Loop data baris 3 sampai 36 ===
-        for ($row = 3; $row <= 36; $row++) {
+        for ($row = 3; ; $row++) {
             $kode = $sheet->getCell('A' . $row)->getValue();
             $deskripsi = $sheet->getCell('B' . $row)->getValue();
-            $plafond_opl = $sheet->getCell('C' . $row)->getCalculatedValue();
-            $transaksi_local = $sheet->getCell('D' . $row)->getCalculatedValue();
-            $transaksi_padi = $sheet->getCell('E' . $row)->getCalculatedValue();
-            $transaksi_padi_sd = $sheet->getCell('F' . $row)->getCalculatedValue();
-            $persen_terhadap_plafond = $sheet->getCell('G' . $row)->getCalculatedValue();
-            $status_user = $sheet->getCell('H' . $row)->getValue();
 
-            // Lewati baris kosong (tidak ada kode)
-            if (empty($kode))
+            // Hentikan loop jika kolom B berisi "TOTAL" (case-insensitive)
+            if (strtoupper(trim($deskripsi)) === 'TOTAL') {
+                break;
+            }
+
+            // Lewati baris jika kolom kode dan deskripsi kosong
+            if (empty($kode) && empty($deskripsi)) {
                 continue;
+            }
+
+            // Ambil nilai dan ubah kosong jadi null
+            $plafond_opl = $sheet->getCell('C' . $row)->getCalculatedValue() ?: null;
+            $transaksi_local = $sheet->getCell('D' . $row)->getCalculatedValue() ?: null;
+            $transaksi_padi = $sheet->getCell('E' . $row)->getCalculatedValue() ?: null;
+            $transaksi_padi_sd = $sheet->getCell('F' . $row)->getCalculatedValue() ?: null;
+            $persen_terhadap_plafond = $sheet->getCell('G' . $row)->getCalculatedValue() ?: null;
+            $status_user = $sheet->getCell('H' . $row)->getValue() ?: null;
 
             DB::table('pembelian_padi')->insert([
                 'excel_id' => $excelId,
-                'kode' => $kode,
-                'deskripsi' => $deskripsi,
+                'kode' => $kode ?: null,
+                'deskripsi' => $deskripsi ?: null,
                 'plafond_opl' => $plafond_opl,
                 'transaksi_local' => $transaksi_local,
                 'transaksi_padi' => $transaksi_padi,
@@ -92,6 +112,7 @@ class PembelianPadiController extends Controller
                 'updated_at' => now(),
             ]);
         }
+
 
         return redirect()->back()->with('success', 'File berhasil diupload dan data berhasil dimasukkan!');
     }

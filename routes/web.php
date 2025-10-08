@@ -14,7 +14,7 @@ use App\Http\Controllers\ExcelController;
 | Home & Auth
 |--------------------------------------------------------------------------
 */
-Route::get('/', fn() => redirect()->route('login'));
+Route::get('/', fn() => redirect()->route('dashboard'));
 
 Route::get('/home', fn() => redirect()->route('dashboard'))->name('home');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');

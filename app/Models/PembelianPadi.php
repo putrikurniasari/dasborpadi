@@ -25,5 +25,5 @@ class PembelianPadi extends Model
         'tahun',
     ];
 
-    public $timestamps = false; // karena migration ada timestamps()
+    public $timestamps = true; // karena migration ada timestamps()
 }

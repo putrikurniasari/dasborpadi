@@ -27,14 +27,20 @@
                             <h2 class="card-title mb-0">Pembelian Padi</h2>
                         </div>
                         {{-- Tombol tampilkan form upload --}}
-                        <button class="btn btn-success" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#formUploadExcel" aria-expanded="false" aria-controls="formUploadExcel">
-                            <i class="fa fa-plus"></i> Upload Excel
-                        </button>
+                        <div class="d-flex align-items-center gap-3"> <!-- Gunakan gap agar antar tombol berjarak -->
+                            <button class="btn btn-outline-info" type="button" onclick="confirmDownloadTemplate()">
+                                <i class="fa fa-download"></i> Download Template
+                            </button>
+
+                            <button class="btn btn-success" type="button" data-bs-toggle="collapse"
+                                data-bs-target="#formUploadExcel" aria-expanded="false" aria-controls="formUploadExcel">
+                                <i class="fa fa-plus"></i> Upload Excel
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body p-3">
 
                     {{-- Notifikasi sukses & error --}}
                     @if(session('success'))
@@ -60,7 +66,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label for="bulanSelect">Bulan</label>
-                                            <select class="form-control" name="bulan" id="bulanSelect">
+                                            <select class="form-control" name="bulan" id="bulanSelect" required>
                                                 <option value="">-- Pilih Bulan --</option>
                                                 <option value="1">Januari</option>
                                                 <option value="2">Februari</option>
@@ -83,7 +89,7 @@
                                         <div class="form-group">
                                             <label for="tahunInput">Tahun</label>
                                             <input type="number" class="form-control" name="tahun" id="tahunInput"
-                                                placeholder="Masukkan Tahun" min="2000" max="2100">
+                                                placeholder="Masukkan Tahun" min="2000" max="2100" required>
                                         </div>
                                     </div>
 
@@ -100,7 +106,11 @@
                                                 <input type="file" class="form-control d-none" name="file_excel"
                                                     id="fileExcelInput" accept=".xlsx,.xls" required>
                                             </div>
-                                            <small id="fileName" class="text-muted mt-1 d-block"></small>
+
+                                            {{-- Area nama file & keterangan --}}
+                                            <div id="fileInfo" class="mt-2">
+                                                <small class="text-muted">Inputkan Excel terlebih dahulu</small>
+                                            </div>
 
                                             @error('file_excel')
                                                 <small class="text-danger">{{ $message }}</small>
@@ -116,7 +126,6 @@
                         </div>
                     </div>
 
-
                     <hr>
 
                     {{-- Tabel daftar file --}}
@@ -124,10 +133,10 @@
                     <table class="table table-bordered table-dark table-striped align-middle">
                         <thead>
                             <tr>
-                                <th style="width: 60px;">No</th>
+                                <th class="text-center" style="width: 60px;">No</th>
                                 <th>Nama File</th>
-                                <th>Bulan</th>
-                                <th>Tahun</th>
+                                <th class="text-center">Bulan</th>
+                                <th class="text-center">Tahun</th>
                                 <!-- <th style="width: 200px;">Tanggal Upload</th> -->
                                 <th style="width: 180px;" class="text-center">Aksi</th>
                             </tr>
@@ -135,15 +144,15 @@
                         <tbody>
                             @forelse($files as $index => $file)
                                 <tr>
-                                    <td>{{ $index + 1 }}</td>
+                                    <td class="text-center">{{ $index + 1 }}</td>
                                     <td>{{ basename($file->file_excel) }}</td>
-                                    <td>{{ $namaBulan[$file->bulan] ?? '-' }}</td>
-                                    <td>{{ $file->tahun }}</td>
+                                    <td class="text-center">{{ $namaBulan[$file->bulan] ?? '-' }}</td>
+                                    <td class="text-center">{{ $file->tahun }}</td>
                                     <!-- <td>{{ $file->tanggal_input }}</td> -->
                                     <td class="text-center">
                                         <div class="d-flex flex-column gap-2">
                                             <a href="{{ asset('storage/' . $file->file_excel) }}" target="_blank"
-                                                class="btn btn-sm btn-info w-100">
+                                                class="btn btn-sm btn-info w-100 mb-1">
                                                 <i class="fa fa-download"></i> Download
                                             </a>
                                             <button type="button" class="btn btn-sm btn-danger w-100"
@@ -185,6 +194,42 @@
                     fileName.textContent = `File dipilih: ${fileInput.files[0].name}`;
                 } else {
                     fileName.textContent = '';
+                }
+            });
+        });
+    </script>
+
+    {{-- Script untuk tampilkan nama file & tombol hapus --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const fileInput = document.getElementById('fileExcelInput');
+            const fileInfo = document.getElementById('fileInfo');
+
+            fileInput.addEventListener('change', function () {
+                fileInfo.innerHTML = ''; // reset isi
+
+                if (fileInput.files.length > 0) {
+                    const fileName = fileInput.files[0].name;
+                    const fileDisplay = document.createElement('div');
+                    fileDisplay.classList.add('d-flex', 'align-items-center', 'justify-content-between');
+
+                    fileDisplay.innerHTML = `
+                                                                                            <small class="text-success"><i class="fa fa-file-excel me-2"></i>${fileName}</small>
+                                                                                            <button type="button" id="clearFileBtn" class="btn btn-sm btn-outline-danger ms-2">
+                                                                                                <i class="fa fa-times"></i>
+                                                                                            </button>
+                                                                                        `;
+
+                    fileInfo.appendChild(fileDisplay);
+
+                    // tombol hapus
+                    const clearBtn = document.getElementById('clearFileBtn');
+                    clearBtn.addEventListener('click', function () {
+                        fileInput.value = ''; // kosongkan input file
+                        fileInfo.innerHTML = '<small class="text-muted">Inputkan Excel terlebih dahulu</small>';
+                    });
+                } else {
+                    fileInfo.innerHTML = '<small class="text-muted">Inputkan Excel terlebih dahulu</small>';
                 }
             });
         });
@@ -241,6 +286,49 @@
                             title: 'Sedang menghapus data pembelian padi...',
                             html: 'Mohon tunggu beberapa saat',
                             allowOutsideClick: false,
+                            didOpen: () => {
+                                Swal.showLoading();
+                            }
+                        });
+                    }
+                });
+            }
+
+            // === Konfirmasi sebelum download template ===
+            window.confirmDownloadTemplate = function () {
+                Swal.fire({
+                    title: 'Download Template Excel?',
+                    html: `
+                                                                                                                                                <div class="text-start" style="color: black;">
+                                                                                                                                                    <p style="color: black;"><b>Pastikan Anda:</b></p>
+                                                                                                                                                    <ul style="text-align: left; padding-left: 18px;">
+                                                                                                                                                        <li style="color: black;">Mengisi data <b>Hingga halaman Sheet <u>Fix</u> Selesai</b>.</li>
+
+                                                                                                                                                        <li style="color: black;">Tidak mengubah struktur kolom atau format bawaan.</li>
+                                                                                                                                                    </ul>
+                                                                                                                                                </div>
+
+                                                                                                                                        `,
+                    icon: 'info',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: 'Ya, Download Template',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const fileUrl = "{{ asset('storage/template/Template Pembelian Padi.xlsx') }}";
+                        const link = document.createElement('a');
+                        link.href = fileUrl;
+                        link.download = 'Template Pembelian Padi.xlsx';
+                        link.click();
+
+                        Swal.fire({
+                            title: 'Sedang mendownload...',
+                            html: '<span style="color:black;">Template akan segera diunduh.</span>',
+                            timer: 1800,
+                            timerProgressBar: true,
+                            showConfirmButton: false,
                             didOpen: () => {
                                 Swal.showLoading();
                             }
@@ -331,6 +419,21 @@
 
         .btn-danger:hover {
             background-color: #c13d3d;
+        }
+
+        .filter-header {
+            flex-wrap: wrap;
+            /* Supaya responsif di layar kecil */
+        }
+
+        .filter-header .d-flex button {
+            white-space: nowrap;
+            /* Supaya teks tombol tidak terpotong */
+        }
+
+        /* Jika ingin jarak antar tombol lebih besar, bisa ubah nilai gap di sini */
+        .filter-header .d-flex {
+            gap: 12px;
         }
     </style>
 

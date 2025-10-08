@@ -10,12 +10,13 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('excel_realisasi', function (Blueprint $table) {
+        Schema::create('excel_transaksi', function (Blueprint $table) {
+            $table->engine='InnoDB';
             $table->id();
             $table->date('tanggal_input');      // tanggal input
             $table->string('file_excel');       // path/nama file excel
             $table->integer('bulan');      
-            $table->integer('tahun');      
+            $table->integer('tahun');  
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('excel_realisasis');
+        Schema::dropIfExists('excel_transaksis');
     }
 };

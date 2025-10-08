@@ -8,8 +8,10 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::create('pembelian_padi', function (Blueprint $table) {
+            $table->engine='InnoDB';
             $table->id();
-            $table->string('kode');
+            $table->unsignedBigInteger('excel_id');
+            $table->string('kode')->nullable();;
             $table->string('deskripsi');
             $table->bigInteger('plafond_opl')->nullable();
             $table->bigInteger('transaksi_local')->nullable();
@@ -19,7 +21,7 @@ return new class extends Migration {
             $table->string('status_user');
             $table->integer('bulan');
             $table->integer('tahun');
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
 
             // ✅ Tambahkan foreign key
             $table->foreign('excel_id')

@@ -8,7 +8,6 @@ let originalCanvasParentHTML = null;
 let cacheRealisasiData = null;
 let lastTahunDipilih = null;
 let lastBulanDipilih = null;
-
 let pembelianPadiData = [];
 
 // ========================
@@ -75,8 +74,87 @@ function cleanupScrollableView() {
 // Chart Tahunan (default)
 // ========================
 function renderChartTahunan() {
-    if (!cacheRealisasiData || cacheRealisasiData.length === 0) return;
     cleanupScrollableView();
+
+    // Cek apakah ada data
+    if (!cacheRealisasiData || cacheRealisasiData.length === 0) {
+        // Sisipkan CSS animasi ke <head> kalau belum ada
+        if (!$('#shineAnimationStyle').length) {
+            $('head').append(`
+            <style id="shineAnimationStyle">
+                @keyframes shine {
+                    0% {
+                        background-position: -200px;
+                    }
+                    100% {
+                        background-position: 200px;
+                    }
+                }
+
+                .shine-text {
+                    background: linear-gradient(90deg, #aaa, #fff, #aaa);
+                    background-size: 200px 100%;
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    animation: shine 2.5s linear infinite;
+                }
+
+                .empty-data-container {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    height: 320px;
+                    text-align: center;
+                    transform: translateY(-30px); /* geser ke atas sedikit */
+                }
+
+                .empty-data-icon {
+                    font-size: 4rem;
+                    color: #888;
+                    margin-bottom: 10px;
+                    opacity: 0.8;
+                }
+
+                .empty-data-text {
+                    font-size: 1.2rem;
+                    font-weight: bold;
+                    color: #cfcfcf;
+                }
+
+                .empty-data-text1 {
+                    font-size: 1rem;
+                    font-weight: light;
+                    color: #cfcfcf;
+                }
+            </style>
+        `);
+        }
+
+        // Masukkan elemen teks + ikon
+        $('#chartBig1Wrapper').html(`
+        <div class="empty-data-container">
+            <div class="empty-data-icon">
+                <i class="fas fa-database"></i>
+            </div>
+            <div class="empty-data-text1 shine-text">
+                Data Realisasi Padi Akan Muncul disini.
+            </div>
+            <div class="empty-data-text shine-text">
+                Tidak ada data yang ditampilkan karena data masih kosong.
+            </div>
+        </div>
+    `);
+
+        // $('#cardTitle').hide();
+        // $('#atas_title').hide();
+        // $('#btnKembaliChart').hide();
+        return;
+    }
+
+
+
+
     lastTahunDipilih = null;
     lastBulanDipilih = null;
     const grouped = {};
@@ -193,7 +271,7 @@ function renderChartBulanan(tahun) {
     const bulanUnik = [...new Set(filteredData.map(item => Number(item.bulan)))].sort((a, b) => a - b);
 
     const bulanNama = ['', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                       'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
     const labels = [];
     const targetSdBulan = [];
@@ -387,7 +465,79 @@ function renderTahunDropdown() {
 // Bar pembelian padi (bawah)
 // ========================
 function renderPembelianChart(kebunFilter, tahunFilter) {
-    if (!pembelianPadiData.length) return;
+
+    if (!pembelianPadiData || pembelianPadiData.length === 0) {
+        // Sisipkan CSS animasi ke <head> kalau belum ada
+        if (!$('#shineAnimationStyle2').length) {
+            $('head').append(`
+                <style id="shineAnimationStyle2">
+                    @keyframes shine {
+                        0% { background-position: -200px; }
+                        100% { background-position: 200px; }
+                    }
+
+                    .shine-text {
+                        background: linear-gradient(90deg, #aaa, #fff, #aaa);
+                        background-size: 200px 100%;
+                        -webkit-background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                        animation: shine 2.5s linear infinite;
+                    }
+
+                    .empty-data-container {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        height: 300px;
+                        text-align: center;
+                        transform: translateY(-25px); /* sedikit ke atas */
+                    }
+
+                    .empty-data-icon {
+                        font-size: 4rem;
+                        color: #888;
+                        margin-bottom: 10px;
+                        opacity: 0.85;
+                    }
+
+                    .empty-data-text {
+                        font-size: 1.2rem;
+                        font-weight: bold;
+                        color: #cfcfcf;
+                    }
+
+                    .empty-data-subtext {
+                        font-size: 1rem;
+                        font-weight: 300;
+                        color: #cfcfcf;
+                    }
+                </style>
+            `);
+        }
+
+        // Masukkan elemen teks + ikon
+        $('#chartPembelianWrapper').html(`
+            <div class="empty-data-container">
+                <div class="empty-data-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <div class="empty-data-subtext shine-text">
+                    Data Pembelian Padi Akan Ditampilkan di Sini.
+                </div>
+                <div class="empty-data-text shine-text">
+                    Tidak ada data yang ditampilkan karena data masih kosong.
+                </div>
+            </div>
+        `);
+
+        // $('#btnKembaliChart2').hide();
+        // $('#cardTitle2').hide();
+        // $('#atasjudul').hide();
+        // $('#tahunWrapper2').hide();
+        // $('.filter-kebun-group').hide();
+        return;
+    }
 
     // gunakan tahun terakhir dipilih kalau ada
     const tahunTerbaru = Math.max(...pembelianPadiData.map(item => Number(item.tahun)));
@@ -442,18 +592,18 @@ function renderPembelianChart(kebunFilter, tahunFilter) {
             },
             onClick: (evt, elements) => {
                 if (elements.length > 0) {
-                    const index = elements[0].index; 
+                    const index = elements[0].index;
                     const bulan = bulanUnik[index]; // gunakan index bulanUnik
                     const tahunDipakai = lastTahunPembelianDipilih;
                     const kebunDipilih = $('#filterKebun').val();
                     renderPembelianPerKebun(bulan, tahunDipakai, kebunDipilih);
-                } 
+                }
             }
         }
     });
 
     $('#btnKembaliChart2').hide();
-    
+
 }
 
 
@@ -528,18 +678,126 @@ function renderPembelianPerKebun(bulan, tahun, kebunFilter) {
     // === Sembunyikan dropdown kebun & tahun ===
     $('.filter-kebun-group, #tahunWrapper2').hide();
 
-    // === Buat tombol persen di kanan atas ===
-    const $wrapper = $('<div class="d-flex gap-2 align-items-center" id="persenButtonsWrapper"></div>');
-    filtered.forEach((item, idx) => {
-        const p = persen[idx];
-        const color = `rgb(${Math.round(255 * (1 - p / 100))}, ${Math.round(255 * (p / 100))}, 0)`; // merah → hijau
-        const $btn = $(`<button class="btn btn-sm text-white" style="background-color:${color}">${item.deskripsi}: ${p.toFixed(1)}%</button>`);
-        $wrapper.append($btn);
-    });
+    // === Sembunyikan dropdown kebun & tahun ===
+$('.filter-kebun-group, #tahunWrapper2').hide();
 
-    // Masukkan tombol ke kanan atas (di filter header card bawah)
-    const $headerRight = $('#chartPembelianPadi').closest('.card').find('.filter-header .d-flex.gap-3');
-    $headerRight.append($wrapper);
+// === Sembunyikan dropdown kebun & tahun ===
+$('.filter-kebun-group, #tahunWrapper2').hide();
+
+// === Buat wrapper utama (judul + grid progress) ===
+const $wrapper = $('<div id="persenButtonsWrapper" class="mt-3"></div>');
+$wrapper.css({
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '15px',
+    background: 'rgba(255,255,255,0.05)',
+    borderRadius: '12px',
+    textAlign: 'center',
+    backdropFilter: 'blur(4px)'
+});
+
+// === Tambahkan style animasi shimmer + layout sejajar ===
+const shimmerStyle = `
+<style id="persenStyleFix">
+    @keyframes shimmerText {
+        0% { background-position: -200px 0; }
+        100% { background-position: 200px 0; }
+    }
+    .shimmer-title h6 {
+        background: linear-gradient(90deg, #fff, #bfbfbf, #fff);
+        background-size: 200px 100%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shimmerText 2.5s infinite linear;
+    }
+    /* --- Perataan progress bar agar sejajar --- */
+    .persen-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 10px;
+        width: 100%;
+    }
+    .progress-box {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        height: 100px; /* tinggi seragam */
+        background: rgba(255,255,255,0.03);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    .progress-box:hover {
+        transform: scale(1.05);
+        background: rgba(255,255,255,0.07);
+    }
+    .progress-box .progress {
+        width: 100%;
+        height: 8px;
+        background: #333;
+        border-radius: 4px;
+        overflow: hidden;
+        margin-top: auto;
+        margin-bottom: 4px;
+    }
+</style>
+`;
+if (!$('#persenStyleFix').length) $('head').append(shimmerStyle);
+
+// === Tambahkan judul ke dalam wrapper ===
+const $title = $(`
+    <div class="text-center shimmer-title mb-2">
+        <h6 style="
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        ">
+            Persentase Capaian Transaksi terhadap Plafond OPL
+        </h6>
+        <small style="color:#ccc; font-size:0.85rem;">
+            Menunjukkan seberapa besar realisasi transaksi dibandingkan target plafon tiap kebun.
+        </small>
+    </div>
+`);
+$wrapper.append($title);
+
+// === Buat grid untuk progress bar ===
+const $grid = $('<div class="persen-grid"></div>');
+
+filtered.forEach((item, idx) => {
+    const p = persen[idx];
+    const color = `hsl(${Math.min(p, 100)}, 70%, 45%)`;
+
+    const $box = $(`
+        <div class="progress-box text-white p-2 shadow-sm">
+            <div style="font-weight:bold; font-size:0.9rem; line-height:1.2rem;">${item.deskripsi}</div>
+            <div class="progress mt-1">
+                <div class="progress-bar" role="progressbar"
+                    style="width:${Math.min(p, 100)}%; background-color:${color}; transition: width 1.2s ease;">
+                </div>
+            </div>
+            <small style="font-size:0.85rem; color:#ccc;">${p.toFixed(1)}%</small>
+        </div>
+    `);
+
+    $grid.append($box);
+});
+
+// === Masukkan grid ke dalam wrapper ===
+$wrapper.append($grid);
+
+// === Sisipkan ke dalam card di bawah chart ===
+const $chartCard = $('#chartPembelianPadi').closest('.card');
+$chartCard.find('#persenButtonsWrapper').remove();
+$chartCard.find('.card-body').append($wrapper);
+
+
+
+
 
     // === Tombol kembali ===
     $('#btnKembaliChart2')
@@ -549,8 +807,17 @@ function renderPembelianPerKebun(bulan, tahun, kebunFilter) {
         .on('click', () => {
             $wrapper.remove();
             $('.filter-kebun-group, #tahunWrapper2').show();
+
+            // 🔹 Reset judul ke tampilan awal
+            $('#chartPembelianPadi')
+                .closest('.card')
+                .find('.card-title')
+                .text('Realisasi Pembelian Padi per Bulan');
+
             renderPembelianChart(kebunFilter, tahun);
         });
+
+
 }
 
 

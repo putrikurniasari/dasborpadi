@@ -17,7 +17,7 @@ class RealisasiPadiUmkmController extends Controller
             ->get();
         return response()->json($data);
     }
-    
+
     public function uploadRealisasi(Request $request)
     {
         $request->validate([
@@ -59,7 +59,19 @@ class RealisasiPadiUmkmController extends Controller
         $sheet = $spreadsheet->getSheetByName('KERTAS KERJA');
 
         if (!$sheet) {
-            return redirect()->back()->with('error', 'Sheet "KERTAS KERJA" tidak ditemukan dalam file Excel.');
+            // Hapus file dari storage
+            if (Storage::disk('public')->exists($path)) {
+                Storage::disk('public')->delete($path);
+            }
+
+            // Hapus data realisasi_padi_umkm (kalau ada yang terkait)
+            DB::table('realisasi_padi_umkm')->where('excel_id', $excelId)->delete();
+
+            // Hapus metadata excel_realisasi
+            DB::table('excel_realisasi')->where('id', $excelId)->delete();
+
+            return redirect()->back()->with('error', 'File Excel yang diunggah tidak sesuai dengan template.
+            Pastikan Anda menggunakan sheet “KERTAS KERJA” dan mengisi data sesuai format template yang telah ditentukan.');
         }
 
         // Ambil data dari sel

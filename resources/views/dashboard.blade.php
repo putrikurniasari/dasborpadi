@@ -7,7 +7,7 @@
                 <div class="card-header">
                     <div class="d-flex justify-content-between align-items-center filter-header flex-column">
                         <div class="w-100">
-                            <h5 class="card-category mb-0">Total Target & Realisasi Anggaran</h5>
+                            <h5 class="card-category mb-0" id="atas_title">Total Target & Realisasi Anggaran</h5>
                             <h2 class="card-title mb-0" id="cardTitle">Realisasi Padi UMKM</h2>
                         </div>
 
@@ -18,25 +18,6 @@
                             </button>
 
                         </div>
-
-                        <!-- Filter Tahun -->
-                        <!-- <div class="filter-tahun-group mt-2" id="tahunWrapper">
-                            <label for="filterTahun" class="filter-tahun-label">Pilih Tahun:</label>
-                            <select id="filterTahun" class="filter-tahun-select">
-                                <option value="" hidden selected>Pilih Tahun</option>
-                            </select>
-                        </div> -->
-
-                        <!-- Filter Tipe Grafik -->
-                        <!-- <div class="filter-tipegrafik-group mt-2" id="tipeGrafikWrapper">
-                            <label for="filterTipeGrafik" class="filter-tipegrafik-label">Tipe Grafik:</label>
-                            <select id="filterTipeGrafik" class="filter-tipegrafik-select">
-                                <option value="" hidden selected>Pilih Tipe Grafik</option>
-                                <option value="perbandingan">Perbandingan Target & Realisasi</option>
-                                <option value="realisasi">Realisasi</option>
-                                <option value="target">Target</option>
-                            </select>
-                        </div> -->
                     </div>
                 </div>
                 <div class="card-body">
@@ -56,8 +37,8 @@
                     <div class="d-flex justify-content-between align-items-center filter-header w-100">
 
                         <div>
-                            <h5 class="card-category mb-0">Total Transaksi Padi</h5>
-                            <h2 class="card-title mb-0">Transaksi Padi per Kebun</h2>
+                            <h5 class="card-category mb-0" id="atasjudul">Total Transaksi Padi</h5>
+                            <h2 class="card-title mb-0" id="cardTitle2">Transaksi Padi per Kebun</h2>
                         </div>
                         <div class="d-flex gap-3 align-items-center">
                             <!-- Filter Tahun (kanan atas) -->
@@ -78,15 +59,14 @@
                         </div>
                     </div>
                     <!-- Tombol kembali -->
-                        <div class="mt-2 w-100">
-                            <button id="btnKembaliChart2" class="btn btn-sm btn-outline-secondary">
-                                <i class="fa fa-arrow-left"></i>
-                            </button>
+                    <div class="mt-2 w-100">
+                        <button id="btnKembaliChart2" class="btn btn-sm btn-outline-secondary">
+                            <i class="fa fa-arrow-left"></i>
+                        </button>
 
-                        </div>
+                    </div>
                 </div>
-
-                <div class="card-body">
+                <div class="card-body" id="chartPembelianWrapper">
                     <div class="chart-area">
                         <canvas id="chartPembelianPadi"></canvas>
                     </div>
