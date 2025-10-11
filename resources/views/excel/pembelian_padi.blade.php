@@ -317,10 +317,10 @@
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        const fileUrl = "{{ asset('storage/template/Template Pembelian Padi.xlsx') }}";
+                        const fileUrl = "{{ asset('storage/template/1.JANUARI_2025_NEW.xlsx') }}";
                         const link = document.createElement('a');
                         link.href = fileUrl;
-                        link.download = 'Template Pembelian Padi.xlsx';
+                        link.download = '1.JANUARI_2025_NEW.xlsx';
                         link.click();
 
                         Swal.fire({

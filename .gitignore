@@ -21,4 +21,8 @@
 /vendor
 Homestead.json
 Homestead.yaml
-Thumbs.db
+Thumbs.
+
+# Jangan abaikan folder public/template
+!public/template/
+!public/template/**

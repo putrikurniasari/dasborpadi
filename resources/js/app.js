@@ -71,12 +71,14 @@ function transparentize(hexColor, opacity = 0.5) {
     return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }
 
+
 // Simpan struktur asli
 $(document).ready(function () {
     const $ctx = $('#chartBig1');
     if ($ctx.length && originalCanvasParentHTML === null) {
         originalCanvasParentHTML = $('#chartBig1Wrapper').html();
     }
+
 
     // Dropdown filters for pembelian padi
     $('#filterKebun').on('change', function () {
@@ -826,6 +828,18 @@ function renderPembelianPerKebunCard2(bulan, tahun, kebunFilter) {
         },
         // plugins: [ChartDataLabels]
     });
+
+    // 🔹 Reset zoom dengan double click
+    ctx.addEventListener('dblclick', () => {
+        chartPembelianPadiInstance.resetZoom();
+        chartPembelianPadiInstance.options.plugins.datalabels.display = false;
+        chartPembelianPadiInstance 
+        
+        
+        .update('none');
+    });
+
+
     const namaBulan = bulanNama[bulan] || bulan;
 
     // === Ubah judul ===

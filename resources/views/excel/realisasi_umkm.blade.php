@@ -320,10 +320,10 @@
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        const fileUrl = "{{ asset('storage/template/Template Kinerja Padi Umkm Bulan Tahun real vs target.xlsx') }}";
+                        const fileUrl = "{{ asset('storage/template/1.Kinerja_Padi_Umkm_JANUARI_2025_real_vs_target_-.xlsx') }}";
                         const link = document.createElement('a');
                         link.href = fileUrl;
-                        link.download = 'Template Kinerja Padi Umkm Bulan Tahun real vs target.xlsx';
+                        link.download = '1.Kinerja_Padi_Umkm_JANUARI_2025_real_vs_target_-.xlsx';
                         link.click();
 
                         Swal.fire({
