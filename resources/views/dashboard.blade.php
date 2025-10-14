@@ -1,5 +1,5 @@
 @extends('layouts.app', ['pageSlug' => 'dashboard'])
-
+<x-slot:title>{{$title}}</x-slot:title>
 @section('content')
     <div class="row">
         <div class="col-12">

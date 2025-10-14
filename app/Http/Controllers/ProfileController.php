@@ -14,7 +14,11 @@ class ProfileController extends Controller
         // Ambil data user yang sedang login dari tabel tb_users
         $user = DB::table('tb_users')->where('id', Auth::id())->first();
 
-        return view('profile.edit', compact('user'));
+        return view('profile.edit', [
+            'user' => $user,
+            'title' => 'Edit Profil'
+        ]);
+
     }
 
     public function update(Request $request)

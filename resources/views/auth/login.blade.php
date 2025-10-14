@@ -1,5 +1,5 @@
 @extends('layouts.app', ['class' => 'login-page', 'page' => __('Login Dashboard Padi'), 'contentClass' => 'login-page'])
-
+<x-slot:title>{{$title}}</x-slot:title>
 @section('content')
     <div class="d-flex justify-content-center align-items-center min-vh-100">
         <div class="w-100" style="max-width: 400px;">

@@ -1,5 +1,5 @@
 @extends('layouts.app', ['page' => __('User Profile'), 'pageSlug' => 'profile'])
-
+<x-slot:title>{{$title}}</x-slot:title>
 @section('content')
     <div class="row">
         <div class="col-md-12 animate__animated animate__fadeInUp">

@@ -11,13 +11,21 @@ class ExcelController extends Controller
     public function realisasiPadiUmkm()
     {
         $files = ExcelRealisasi::orderBy('created_at', 'desc')->get();
-        return view('excel.realisasi_umkm', compact('files'));
+        return view('excel.realisasi_umkm', [
+            'files' => $files,
+            'title' => 'Realisasi Padi UMKM'
+        ]);
+
     }
 
     public function pembelianPadi()
     {
         $files = ExcelTransaksi::orderBy('created_at', 'desc')->get();
-        return view('excel.pembelian_padi', compact('files'));
+        return view('excel.pembelian_padi', [
+            'files' => $files,
+            'title' => 'Pembelian Padi'
+        ]);
+
     }
 
     public function uploadRealisasi(Request $request)

@@ -1,4 +1,5 @@
 @extends('layouts.app', ['pageSlug' => 'realisasi-umkm'])
+<x-slot:title>{{$title}}</x-slot:title>
 @php
     $namaBulan = [
         1 => 'Januari',
@@ -320,10 +321,10 @@
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        const fileUrl = "{{ asset('storage/template/1.Kinerja_Padi_Umkm_JANUARI_2025_real_vs_target_-.xlsx') }}";
+                        const fileUrl = "{{ asset('storage/template/Template Realisasi Padi.xlsx') }}";
                         const link = document.createElement('a');
                         link.href = fileUrl;
-                        link.download = '1.Kinerja_Padi_Umkm_JANUARI_2025_real_vs_target_-.xlsx';
+                        link.download = 'Template Realisasi Padi.xlsx';
                         link.click();
 
                         Swal.fire({

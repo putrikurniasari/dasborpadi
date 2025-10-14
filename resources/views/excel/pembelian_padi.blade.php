@@ -1,5 +1,5 @@
 @extends('layouts.app', ['pageSlug' => 'pembelian-padi'])
-
+<x-slot:title>{{$title}}</x-slot:title>
 @php
     $namaBulan = [
         1 => 'Januari',
@@ -214,11 +214,11 @@
                     fileDisplay.classList.add('d-flex', 'align-items-center', 'justify-content-between');
 
                     fileDisplay.innerHTML = `
-                                                                                            <small class="text-success"><i class="fa fa-file-excel me-2"></i>${fileName}</small>
-                                                                                            <button type="button" id="clearFileBtn" class="btn btn-sm btn-outline-danger ms-2">
-                                                                                                <i class="fa fa-times"></i>
-                                                                                            </button>
-                                                                                        `;
+                                                                                                    <small class="text-success"><i class="fa fa-file-excel me-2"></i>${fileName}</small>
+                                                                                                    <button type="button" id="clearFileBtn" class="btn btn-sm btn-outline-danger ms-2">
+                                                                                                        <i class="fa fa-times"></i>
+                                                                                                    </button>
+                                                                                                `;
 
                     fileInfo.appendChild(fileDisplay);
 
@@ -299,16 +299,16 @@
                 Swal.fire({
                     title: 'Download Template Excel?',
                     html: `
-                                                                                                                                                <div class="text-start" style="color: black;">
-                                                                                                                                                    <p style="color: black;"><b>Pastikan Anda:</b></p>
-                                                                                                                                                    <ul style="text-align: left; padding-left: 18px;">
-                                                                                                                                                        <li style="color: black;">Mengisi data <b>Hingga halaman Sheet <u>Fix</u> Selesai</b>.</li>
+                                                                                                                                                                <div class="text-start" style="color: black;">
+                                                                                                                                                                    <p style="color: black;"><b>Pastikan Anda:</b></p>
+                                                                                                                                                                    <ul style="text-align: left; padding-left: 18px;">
+                                                                                                                                                                        <li style="color: black;">Mengisi data <b>Hingga halaman Sheet <u>Fix</u> Selesai</b>.</li>
 
-                                                                                                                                                        <li style="color: black;">Tidak mengubah struktur kolom atau format bawaan.</li>
-                                                                                                                                                    </ul>
-                                                                                                                                                </div>
+                                                                                                                                                                        <li style="color: black;">Tidak mengubah struktur kolom atau format bawaan.</li>
+                                                                                                                                                                    </ul>
+                                                                                                                                                                </div>
 
-                                                                                                                                        `,
+                                                                                                                                                        `,
                     icon: 'info',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -317,10 +317,10 @@
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        const fileUrl = "{{ asset('storage/template/1.JANUARI_2025_NEW.xlsx') }}";
+                        const fileUrl = "{{ asset('storage/template/Template Pembelian Padi.xlsx') }}";
                         const link = document.createElement('a');
                         link.href = fileUrl;
-                        link.download = '1.JANUARI_2025_NEW.xlsx';
+                        link.download = 'Template Pembelian Padi.xlsx';
                         link.click();
 
                         Swal.fire({
