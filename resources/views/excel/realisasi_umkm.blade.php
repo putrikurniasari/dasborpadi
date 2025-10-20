@@ -321,10 +321,10 @@
                     cancelButtonText: 'Batal'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        const fileUrl = "{{ asset('storage/template/Template Realisasi Padi.xlsx') }}";
+                        const fileUrl = "{{ asset('storage/template/Template Realisasi.xlsx') }}";
                         const link = document.createElement('a');
                         link.href = fileUrl;
-                        link.download = 'Template Realisasi Padi.xlsx';
+                        link.download = 'Template Realisasi.xlsx';
                         link.click();
 
                         Swal.fire({

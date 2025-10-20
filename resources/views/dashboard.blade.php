@@ -75,3 +75,55 @@
         </div>
     </div>
 @endsection
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // 🔹 1. Cegah notifikasi demo dari Black Dashboard
+        if (typeof demo !== 'undefined') {
+            demo.showNotification = function () { }; // kosongkan fungsi
+        }
+
+        // 🔹 2. Cegah notifikasi dari bootstrap-notify (kadang muncul otomatis)
+        if ($.notify) {
+            $.notify = function () { }; // matikan semua notify
+        }
+
+        // 🔹 3. Hilangkan elemen notifikasi yang sempat muncul (jika sudah dirender)
+        setTimeout(() => {
+            document.querySelectorAll('.alert.alert-warning, .alert').forEach(el => {
+                if (el.innerText.includes('Change your password') || el.innerText.includes('notifikasi')) {
+                    el.remove();
+                }
+            });
+        }, 500);
+
+        // 🔹 4. Awasi DOM, hapus notifikasi jika muncul setelah delay
+        const observer = new MutationObserver(() => {
+            document.querySelectorAll('.alert.alert-warning, .alert').forEach(el => {
+                if (el.innerText.includes('Change your password') || el.innerText.includes('notifikasi')) {
+                    el.remove();
+                }
+            });
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+</script>
+
+@if (session('login_success'))
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            Swal.fire({
+                title: "Login Berhasil 🎉",
+                text: "Selamat datang kembali, {{ Auth::user()->username }}!",
+                icon: "success",
+                confirmButtonText: "Lanjut",
+                timer: 20000,
+                timerProgressBar: true,
+                position: "center", // ✅ muncul di tengah layar
+                background: "#1e1e2f",
+                color: "#fff",
+            });
+        });
+    </script>
+@endif

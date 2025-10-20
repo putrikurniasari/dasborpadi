@@ -517,22 +517,6 @@ function renderChartPerKebunCard1(bulan, tahun) {
         chartBig1Instance.update('none');
     });
 
-    // 🔹 FIX SCROLL: benar-benar cegah halaman ikut scroll saat zoom di chart
-    const preventScroll = (e) => {
-        // hanya aktifkan kalau mouse benar-benar di dalam chart
-        if (e.target.closest('#chartBig1')) {
-            e.preventDefault();
-        }
-    };
-
-    ctx.addEventListener('mouseenter', () => {
-        window.addEventListener('wheel', preventScroll, { passive: false });
-    });
-
-    ctx.addEventListener('mouseleave', () => {
-        window.removeEventListener('wheel', preventScroll, { passive: false });
-    });
-
     const namaBulan = bulanNama[bulan] || bulan;
     $('#cardTitle').text(`Transaksi per Kebun Bulan ${namaBulan} ${tahun}`);
 

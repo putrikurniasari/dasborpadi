@@ -33,8 +33,9 @@
                         </li>
                         <li class="dropdown-divider"></li>
                         <li class="nav-link">
-                            <a href="{{ route('logout') }}" class="nav-item dropdown-item">{{ __('Log out') }}</a>
+                            <a href="#" id="logoutBtn" class="nav-item dropdown-item">{{ __('Log out') }}</a>
                         </li>
+
                     </ul>
                 </li>
                 <li class="separator d-lg-none"></li>
@@ -55,3 +56,36 @@
         </div>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault(); // supaya tidak langsung logout
+
+                Swal.fire({
+                    title: 'Yakin ingin logout?',
+                    text: "Anda akan keluar dari sistem.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#1e1e2f',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Ya, Logout',
+                    cancelButtonText: 'Batal',
+                    showClass: {
+                        popup: 'animate__animated animate__fadeInDown'
+                    },
+                    hideClass: {
+                        popup: 'animate__animated animate__fadeOutUp'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Arahkan ke route logout
+                        window.location.href = "{{ route('logout') }}";
+                    }
+                });
+            });
+        }
+    });
+</script>
