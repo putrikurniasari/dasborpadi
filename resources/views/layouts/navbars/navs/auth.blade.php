@@ -8,7 +8,20 @@
                     <span class="navbar-toggler-bar bar3"></span>
                 </button>
             </div>
-            <a class="navbar-brand" href="#">{{ $page ?? __('Dashboard') }}</a>
+            <a class="navbar-brand" href="#">
+                @if(isset($pageSlug) && $pageSlug == 'dashboard')
+                    Dashboard
+                @elseif(isset($pageSlug) && $pageSlug == 'realisasi-umkm')
+                    Excel | Realisasi Padi UMKM
+                @elseif(isset($pageSlug) && $pageSlug == 'pembelian-padi')
+                    Excel | Pembelian Padi
+                @elseif(isset($pageSlug) && $pageSlug == 'profile')
+                    User Profile
+                @else
+                    Dashboard
+                @endif
+            </a>
+
         </div>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation"
             aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
