@@ -1,5 +1,4 @@
-<footer class="footer">
-    <div class="container-fluid">
+<footer class="footer-wrapper">
         
         <div class="copyright">
             Copyright &copy;
@@ -8,5 +7,4 @@
             </script>
             PT. Perkebunan Nusantara IV
         </div>
-    </div>
 </footer>

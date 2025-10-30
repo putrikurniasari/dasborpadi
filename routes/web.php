@@ -17,6 +17,8 @@ use App\Http\Controllers\ExcelController;
 Route::get('/', fn() => redirect()->route('dashboard'));
 Route::get('/home', fn() => redirect()->route('dashboard'))->name('home');
 
+
+
 // ✅ AUTH ROUTES
 // Tampilkan halaman gabungan login-register
 Route::get('/auth', function () {

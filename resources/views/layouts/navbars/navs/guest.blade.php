@@ -16,7 +16,7 @@
             <span class="navbar-toggler-bar navbar-kebab"></span>
         </button>
         <div class="collapse navbar-collapse" id="navigation">
-            <ul class="navbar-nav ml-auto">
+            <ul class="navbar-nav ms-auto" style="margin-right: 100px;">
                 <li class="nav-item ">
                     <a href="{{ route('auth') }}" class="nav-link">
                         <i class="tim-icons icon-single-02"></i> {{ __('Login') }}

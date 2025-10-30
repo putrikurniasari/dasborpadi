@@ -840,7 +840,6 @@ function renderPembelianPerKebunCard2(bulan, tahun, kebunFilter) {
         .text('← Kembali ke Bulanan')
         .off('click')
         .on('click', () => {
-            $wrapper.remove();
             $('.filter-kebun-group, #tahunWrapper2').show();
 
             // 🔹 Reset judul ke tampilan awal

@@ -1,153 +1,177 @@
-<div class="sidebar custom-sidebar">
-    <div class="sidebar-wrapper">
-        <div class="logo" style="text-align:center;">
-            <a href="#" class="simple-text logo-normal">{{ __('MONITORING PADI') }}</a>
-        </div>
-        <ul class="nav">
-
-            <li @if (isset($pageSlug) && $pageSlug == 'dashboard') class="active" @endif>
-                <a href="{{ route('home') }}">
-                    <i class="fa-solid fa-chart-pie"></i>
-                    <p>{{ __('Dashboard') }}</p>
-                </a>
-            </li>
-
-            <li @if (isset($pageSlug) && in_array($pageSlug, ['realisasi-umkm', 'pembelian-padi'])) class="active"
-            @endif>
-                <a data-toggle="collapse" href="#excelMenu"
-                    aria-expanded="{{ isset($pageSlug) && in_array($pageSlug, ['realisasi-umkm', 'pembelian-padi']) ? 'true' : 'false' }}">
-                    <i class="fa-solid fa-file-excel"></i>
-                    <p>
-                        {{ __('File Excel') }}
-                        <b class="caret"></b>
-                    </p>
-                </a>
-                <div class="collapse {{ isset($pageSlug) && in_array($pageSlug, ['realisasi-umkm', 'pembelian-padi']) ? 'show' : '' }}"
-                    id="excelMenu">
-                    <ul class="nav">
-                        <li @if (isset($pageSlug) && $pageSlug == 'realisasi-umkm') class="active" @endif>
-                            <a href="{{ route('excel.realisasi_umkm') }}">
-                                <span class="sidebar-mini-icon">RU</span>
-                                <span class="sidebar-normal">{{ __('Realisasi Padi UMKM') }}</span>
-                            </a>
-                        </li>
-                        <li @if (isset($pageSlug) && $pageSlug == 'pembelian-padi') class="active" @endif>
-                            <a href="{{ route('excel.pembelian_padi') }}">
-                                <span class="sidebar-mini-icon">PP</span>
-                                <span class="sidebar-normal">{{ __('Pembelian Padi') }}</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li>
-
-            <li @if (isset($pageSlug) && $pageSlug == 'profile') class="active" @endif>
-                <a href="{{ route('profile.edit') }}">
-                    <i class="fa-solid fa-user"></i>
-                    <p>{{ __('User Profile') }}</p>
-                </a>
-            </li>
-
-            <!-- End Menu Dropdown -->
-        </ul>
+<!-- [ Sidebar Menu ] start -->
+<nav class="pc-sidebar pc-trigger">
+  <div class="navbar-wrapper">
+    <div class="m-header">
+      <a href="../dashboard/index.html" class="b-brand text-primary">
+        <!-- ========   Change your logo from here   ============ -->
+        <img src="../assets/images/logo-dark.svg" class="img-fluid logo-lg" alt="logo">
+        <span class="badge bg-light-success rounded-pill ms-2 theme-version">v2.6.0</span>
+      </a>
     </div>
-    <style>
-        /* Reset list */
-        .custom-sidebar .nav,
-        .custom-sidebar .nav ul,
-        .custom-sidebar .nav li {
-            list-style: none !important;
-        }
+    <div class="navbar-content">
+      <div class="card pc-user-card">
+        <div class="card-body">
+          <div class="d-flex align-items-center">
+            <div class="flex-shrink-0">
+              <img src="../assets/images/user/avatar-1.jpg" alt="user-image" class="user-avtar wid-45 rounded-circle" />
+            </div>
+            <div class="flex-grow-1 ms-3 me-2">
+              <h6 class="mb-0">Jonh Smith</h6>
+              <small>Administrator</small>
+            </div>
+            <a class="btn btn-icon btn-link-secondary avtar" data-bs-toggle="collapse" href="#pc_sidebar_userlink">
+              <svg class="pc-icon">
+                <use xlink:href="#custom-sort-outline"></use>
+              </svg>
+            </a>
+          </div>
+          <div class="collapse pc-user-links" id="pc_sidebar_userlink">
+            <div class="pt-3">
+              <a href="#!">
+                <i class="ti ti-user"></i>
+                <span>My Account</span>
+              </a>
+              <a href="#!">
+                <i class="ti ti-settings"></i>
+                <span>Settings</span>
+              </a>
+              <a href="#!">
+                <i class="ti ti-lock"></i>
+                <span>Lock Screen</span>
+              </a>
+              <a href="#!">
+                <i class="ti ti-power"></i>
+                <span>Logout</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        /* Base link style */
-        .custom-sidebar .nav li>a {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 20px;
-            border-radius: 8px;
-            transition: all 0.35s ease;
-            overflow: hidden;
-            z-index: 1;
-        }
+      <ul class="pc-navbar">
+        <li class="pc-item pc-caption">
+          <label>Navigation</label>
+        </li>
 
-        /* Icon animation */
-        .custom-sidebar .nav li>a i {
-            font-size: 1.1rem;
-            transition: transform 0.35s ease, color 0.35s ease;
-        }
+        <li class="pc-item">
+          <a href="{{ route('dashboard') }}" class="pc-link">
+            <span class="pc-micon">
+              <svg class="pc-icon">
+                <use xlink:href="#custom-status-up"></use>
+              </svg>
+            </span>
+            <span class="pc-mtext">Dashboard</span>
+          </a>
+        </li>
 
-        /* Highlight slide effect */
-        .custom-sidebar .nav li>a::before {
-            content: '';
-            position: absolute;
-            left: -100%;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.15);
-            transition: left 0.35s ease;
-            z-index: -1;
-        }
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon">
+              <svg class="pc-icon">
+                <use xlink:href="#custom-level"></use>
+              </svg> </span><span class="pc-mtext">Excel</span><span class="pc-arrow"><i
+                data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="{{ route('excel.pembelian_padi') }}">Pembelian Padi</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('excel.realisasi_umkm') }}">Realisasi Padi UMKM</a></li>
+          </ul>
+        </li>
 
-        /* Hover effect */
-        .custom-sidebar .nav li>a:hover::before {
-            left: 0;
-        }
-
-        .custom-sidebar .nav li>a:hover {
-            transform: translateX(6px);
-        }
-
-        .custom-sidebar .nav li>a:hover i {
-            transform: translateX(4px) scale(1.15);
-        }
-
-        /* Text slide effect */
-        .custom-sidebar .nav li>a:hover p,
-        .custom-sidebar .nav li>a:hover span {
-            transform: translateX(4px);
-            transition: transform 0.35s ease;
-        }
-
-        /* Active state */
-        .custom-sidebar .nav li.active>a {
-            background: rgba(255, 255, 255, 0.25) !important;
-            border-left: 3px solid #fff;
-            transform: translateX(6px);
-            color: #fff !important;
-            font-weight: bold;
-        }
-
-        .custom-sidebar .nav li.active>a i {
-            color: #fff !important;
-        }
-
-        /* Ensure active state keeps highlight */
-        .custom-sidebar .nav li.active>a::before {
-            left: 0;
-        }
-
-        /* Dropdown caret */
-        .custom-sidebar .nav li>a[data-toggle="collapse"] p {
-            flex: 1;
-            margin: 0;
-        }
-
-        .custom-sidebar .nav li>a[data-toggle="collapse"] .caret {
-            font-size: 0.8rem;
-            transition: transform 0.3s ease;
-        }
-
-        .custom-sidebar .nav li>a[data-toggle="collapse"][aria-expanded="true"] .caret {
-            transform: rotate(0deg);
-        }
-
-        .custom-sidebar .nav li>a[data-toggle="collapse"] .caret {
-            transform: rotate(180deg);
-        }
-    </style>
-
-
-</div>
+        <li class="pc-item pc-caption">
+          <label>Authentication</label>
+        </li>
+        <li class="pc-item">
+          <a href="../pages/login-v1.html" class="pc-link" target="_blank"><span class="pc-micon">
+              <svg class="pc-icon">
+                <use xlink:href="#custom-shield"></use>
+              </svg> </span><span class="pc-mtext">Login</span></a>
+        </li>
+        <li class="pc-item">
+          <a href="../pages/register-v1.html" class="pc-link" target="_blank"><span class="pc-micon">
+              <svg class="pc-icon">
+                <use xlink:href="#custom-password-check"></use>
+              </svg> </span><span class="pc-mtext">Register</span></a>
+        </li>
+        <li class="pc-item pc-caption">
+          <label>UI Components</label>
+          <svg class="pc-icon">
+            <use xlink:href="#custom-box-1"></use>
+          </svg>
+        </li>
+        <li class="pc-item">
+          <a href="../elements/bc_typography.html" class="pc-link"><span class="pc-micon">
+              <svg class="pc-icon">
+                <use xlink:href="#custom-text-block"></use>
+              </svg> </span><span class="pc-mtext">Typography</span></a>
+        </li>
+        <li class="pc-item">
+          <a href="../elements/bc_color.html" class="pc-link"><span class="pc-micon">
+              <svg class="pc-icon">
+                <use xlink:href="#custom-clipboard"></use>
+              </svg> </span><span class="pc-mtext">Color</span></a>
+        </li>
+        <li class="pc-item">
+          <a href="../elements/icon-tabler.html" class="pc-link"><span class="pc-micon">
+              <svg class="pc-icon">
+                <use xlink:href="#custom-mouse-circle"></use>
+              </svg> </span><span class="pc-mtext">Tabler</span>
+          </a>
+        </li>
+        <li class="pc-item pc-caption">
+          <label>Other</label>
+          <svg class="pc-icon">
+            <use xlink:href="#custom-notification-status"></use>
+          </svg>
+        </li>
+        <li class="pc-item pc-hasmenu">
+          <a href="#!" class="pc-link"><span class="pc-micon">
+              <svg class="pc-icon">
+                <use xlink:href="#custom-level"></use>
+              </svg> </span><span class="pc-mtext">Menu levels</span><span class="pc-arrow"><i
+                data-feather="chevron-right"></i></span></a>
+          <ul class="pc-submenu">
+            <li class="pc-item"><a class="pc-link" href="#!">Level 2.1</a></li>
+            <li class="pc-item pc-hasmenu">
+              <a href="#!" class="pc-link">Level 2.2<span class="pc-arrow"><i
+                    data-feather="chevron-right"></i></span></a>
+              <ul class="pc-submenu">
+                <li class="pc-item"><a class="pc-link" href="#!">Level 3.1</a></li>
+                <li class="pc-item"><a class="pc-link" href="#!">Level 3.2</a></li>
+                <li class="pc-item pc-hasmenu">
+                  <a href="#!" class="pc-link">Level 3.3<span class="pc-arrow"><i
+                        data-feather="chevron-right"></i></span></a>
+                  <ul class="pc-submenu">
+                    <li class="pc-item"><a class="pc-link" href="#!">Level 4.1</a></li>
+                    <li class="pc-item"><a class="pc-link" href="#!">Level 4.2</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+            <li class="pc-item pc-hasmenu">
+              <a href="#!" class="pc-link">Level 2.3<span class="pc-arrow"><i
+                    data-feather="chevron-right"></i></span></a>
+              <ul class="pc-submenu">
+                <li class="pc-item"><a class="pc-link" href="#!">Level 3.1</a></li>
+                <li class="pc-item"><a class="pc-link" href="#!">Level 3.2</a></li>
+                <li class="pc-item pc-hasmenu">
+                  <a href="#!" class="pc-link">Level 3.3<span class="pc-arrow"><i
+                        data-feather="chevron-right"></i></span></a>
+                  <ul class="pc-submenu">
+                    <li class="pc-item"><a class="pc-link" href="#!">Level 4.1</a></li>
+                    <li class="pc-item"><a class="pc-link" href="#!">Level 4.2</a></li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li class="pc-item"><a href="../other/sample-page.html" class="pc-link">
+            <span class="pc-micon">
+              <svg class="pc-icon">
+                <use xlink:href="#custom-notification-status"></use>
+              </svg>
+            </span>
+            <span class="pc-mtext">Sample page</span></a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
