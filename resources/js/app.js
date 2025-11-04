@@ -9,11 +9,11 @@ Chart.register(ChartDataLabels);
 
 //inisialisasi variabel
 let chartBig1Instance = null;
-let chartBig1YAxisInstance = null;
+// let chartBig1YAxisInstance = null;
 let originalCanvasParentHTML = null;
 let cacheRealisasiData = null;
-let lastTahunDipilih = null;
-let lastBulanDipilih = null;
+// let lastTahunDipilih = null;
+// let lastBulanDipilih = null;
 let pembelianPadiData = [];
 let chartPembelianPadiInstance = null;
 let kebunList = [];
@@ -29,7 +29,7 @@ let lastTahunPembelianDipilih = null;
 function loadChartUMKM() {
     $.getJSON('/api/realisasi-padi-umkm', function (data) {
         cacheRealisasiData = data || [];
-        renderChartTahunanCard1();
+        renderTabelRealisasiCard1();
     }).fail(function (err) {
         console.error('Gagal load /api/realisasi-padi-umkm', err);
     });
@@ -105,7 +105,7 @@ $(document).ready(function () {
 // Dropdown Kebun
 function renderKebunDropdown() {
     const $dropdown = $('#filterKebun');
-    $dropdown.empty().append('<option value="" selected>Semua Kebun</option>');
+    $dropdown.empty().append('<option value="default" selected>Semua Kebun</option>');
     kebunList.forEach(kebun => $dropdown.append(`<option value="${kebun}">${kebun}</option>`));
 }
 
@@ -128,6 +128,92 @@ function renderTahunDropdown() {
 // ========================
 // Bar Chart
 // ========================
+
+// Card Atas (Tabel) 
+function renderTabelRealisasiCard1() {
+    // Cek apakah ada data
+    if (!cacheRealisasiData || cacheRealisasiData.length === 0) {
+        // Sisipkan CSS animasi ke <head> kalau belum ada
+        if (!$('#shineAnimationStyle').length) {
+            $('head').append(`
+            <style id="shineAnimationStyle">
+                @keyframes shine {
+                    0% {
+                        background-position: -200px;
+                    }
+                    100% {
+                        background-position: 200px;
+                    }
+                }
+
+                .shine-text {
+                    background: linear-gradient(90deg, #aaa, #fff, #aaa);
+                    background-size: 200px 100%;
+                    -webkit-background-clip: text;
+                    -webkit-text-fill-color: transparent;
+                    animation: shine 2.5s linear infinite;
+                }
+
+                .empty-data-container {
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    height: 320px;
+                    text-align: center;
+                    transform: translateY(-30px); /* geser ke atas sedikit */
+                }
+
+                .empty-data-icon {
+                    font-size: 4rem;
+                    color: #888;
+                    margin-bottom: 10px;
+                    opacity: 0.8;
+                }
+
+                .empty-data-text {
+                    font-size: 1.2rem;
+                    font-weight: bold;
+                    color: #cfcfcf;
+                }
+
+                .empty-data-text1 {
+                    font-size: 1rem;
+                    font-weight: light;
+                    color: #cfcfcf;
+                }
+            </style>
+        `);
+        }
+        // Masukkan elemen teks + ikon
+        $('#chartBig1Wrapper').html(`
+        <div class="empty-data-container">
+            <div class="empty-data-icon">
+                <i class="fas fa-database"></i>
+            </div>
+            <div class="empty-data-text1 shine-text">
+                Data Realisasi Padi Akan Muncul disini.
+            </div>
+            <div class="empty-data-text shine-text">
+                Tidak ada data yang ditampilkan karena data masih kosong.
+            </div>
+        </div>
+    `);
+        return;
+    }
+
+    $('#cardTitle').text('Tabel Realisasi Padi UMKM');
+    $('#chartBig1Wrapper').hide()
+    $('#chartBig1WrapperDefault').show()
+    $('#searchtabel').show();
+    $('#btnKembaliChart')
+        .hide()
+        .text('');
+    $('#btnlihatgrafik')
+        .show()
+        .off('click')
+        .on('click', () => renderChartTahunanCard1());
+}
 
 // Card Atas (Chart Tahunan) 
 function renderChartTahunanCard1() {
@@ -298,11 +384,15 @@ function renderChartTahunanCard1() {
     });
 
     $('#cardTitle').text('Realisasi Padi UMKM per Tahun');
+    $('#chartBig1Wrapper').show();
+    $('#chartBig1WrapperDefault').hide();
     $('#btnKembaliChart')
-        .hide()
-        .text('');
-    $('#tipeGrafikWrapper').hide();
-    $('#tahunWrapper').hide();
+        .show()
+        .text('← Kembali ke Tabel')
+        .off('click')
+        .on('click', () => renderTabelRealisasiCard1());
+    $('#btnlihatgrafik').hide();
+    $('#searchtabel').hide();
 }
 
 // Card Atas (Chart Bulanan)
@@ -530,7 +620,19 @@ function renderChartPerKebunCard1(bulan, tahun) {
 }
 
 // Card Bawah (Chart Transaksi Padi)
+
+//bar
 function renderChartPembelianCard2(kebunFilter, tahunFilter) {
+    // Jika belum pilih kebun atau pilih semua kebun
+    if (!kebunFilter || kebunFilter === 'default' || kebunFilter === 'Semua Kebun') {
+        $('#chartBig2WrapperDefault').show();
+        $('#chartPembelianWrapper').hide();
+        return; // keluar fungsi, tidak perlu render chart pembelian
+    } else {
+        $('#chartBig2WrapperDefault').hide();
+        $('#chartPembelianWrapper').show();
+    }
+    
     if (!pembelianPadiData || pembelianPadiData.length === 0) {
         // Sisipkan CSS animasi ke <head> kalau belum ada
         if (!$('#shineAnimationStyle2').length) {
@@ -576,8 +678,7 @@ function renderChartPembelianCard2(kebunFilter, tahunFilter) {
             `);
         }
         // Masukkan elemen teks + ikon
-        $('#chartPembelianWrapper').html(`
-            <div class="empty-data-container">
+        $('#chartPembelianWrapper').html(` <div class="empty-data-container">
                 <div class="empty-data-icon">
                     <i class="fas fa-database"></i>
                 </div>
@@ -619,7 +720,7 @@ function renderChartPembelianCard2(kebunFilter, tahunFilter) {
     const ctx = document.getElementById('chartPembelianPadi');
     if (!ctx) return;
     if (chartPembelianPadiInstance) chartPembelianPadiInstance.destroy();
-
+    
     chartPembelianPadiInstance = new Chart(ctx, {
         type: 'bar',
         data: {
@@ -676,6 +777,7 @@ function renderChartPembelianCard2(kebunFilter, tahunFilter) {
         },
     });
 
+    $('#chartBigWrapperDefault').hide()
     $('#btnKembaliChart2').hide();
 
 }
@@ -817,10 +919,10 @@ function renderPembelianPerKebunCard2(bulan, tahun, kebunFilter) {
     ctx.addEventListener('dblclick', () => {
         chartPembelianPadiInstance.resetZoom();
         chartPembelianPadiInstance.options.plugins.datalabels.display = false;
-        chartPembelianPadiInstance 
-        
-        
-        .update('none');
+        chartPembelianPadiInstance
+
+
+            .update('none');
     });
 
 
@@ -893,7 +995,7 @@ function renderPembelianPerKebunCard2(bulan, tahun, kebunFilter) {
         align-items: center;
         height: 100px; /* tinggi seragam */
         background: rgba(255,255,255,0.03);
-        border-radius: 8px;
+        border-radius: 12px;
         transition: all 0.3s ease;
     }
     .progress-box:hover {
@@ -904,7 +1006,7 @@ function renderPembelianPerKebunCard2(bulan, tahun, kebunFilter) {
         width: 100%;
         height: 8px;
         background: #333;
-        border-radius: 4px;
+        border-radius: 12px;
         overflow: hidden;
         margin-top: auto;
         margin-bottom: 4px;

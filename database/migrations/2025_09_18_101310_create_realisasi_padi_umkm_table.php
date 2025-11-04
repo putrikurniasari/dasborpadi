@@ -15,10 +15,13 @@ return new class extends Migration {
             $table->integer('tahun');
             $table->tinyInteger('bulan');
             $table->bigInteger('target_tahun')->nullable();
+            $table->bigInteger('target_bulan')->nullable();
             $table->bigInteger('target_sd_bulan')->nullable();
+            $table->bigInteger('realisasi_bulan')->nullable();
             $table->bigInteger('realisasi_sd_bulan')->nullable();
             $table->bigInteger('sisa_target')->nullable();
-            $table->bigInteger('selisih_rp')->nullable();
+            $table->bigInteger('selisih_bulan')->nullable();
+            $table->bigInteger('selisih_sd_bulan')->nullable();
             $table->decimal('persentase_capaian', 6, 2)->nullable();
             $table->timestamps();
 

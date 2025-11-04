@@ -30,12 +30,14 @@
 
                             {{-- Tombol tampilkan form upload --}}
                             <div class="d-flex align-items-center gap-3"> <!-- Gunakan gap agar antar tombol berjarak -->
-                                <button class="btn btn-outline-info" type="button" onclick="confirmDownloadTemplate()">
+                                <button class="btn btn-outline-info" type="button" onclick="confirmDownloadTemplate()"
+                                    style="border-radius:12px;">
                                     <i class="fa fa-download"></i> Download Template
                                 </button>
 
                                 <button class="btn btn-success" type="button" data-bs-toggle="collapse"
-                                    data-bs-target="#formUploadExcel" aria-expanded="false" aria-controls="formUploadExcel">
+                                    data-bs-target="#formUploadExcel" aria-expanded="false" aria-controls="formUploadExcel"
+                                    style="border-radius:12px;">
                                     <i class="fa fa-plus"></i> Upload Excel
                                 </button>
                             </div>
@@ -111,7 +113,8 @@
                                     </div>
 
                                     <div class="text-end mt-3">
-                                        <button type="submit" class="btn btn-primary">Upload</button>
+                                        <button type="submit" class="btn btn-primary"
+                                            style="border-radius:12px;">Upload</button>
                                     </div>
                                 </form>
                             </div>
@@ -142,18 +145,13 @@
                                         <!-- <td>{{ $file->tanggal_input }}</td> -->
                                         <td class="text-center">
                                             <div class="d-flex flex-column gap-2">
-                                                <a href="#" class="btn btn-sm btn-info w-100 mb-1"
+                                                <a href="#" class="btn btn-sm btn-info w-100 mb-1" style="border-radius:12px;"
                                                     onclick="confirmDownloadFile('{{ asset('storage/' . $file->file_excel) }}', '{{ basename($file->file_excel) }}'); return false;">
                                                     <i class="fa fa-download"></i> Download
                                                 </a>
 
-
-                                                <!-- <a href="{{ asset('storage/' . $file->file_excel) }}" target="_blank"
-                                                                                                                class="btn btn-sm btn-info w-100 mb-1">
-                                                                                                                <i class="fa fa-download"></i> Download
-                                                                                                            </a> -->
                                                 <button type="button" class="btn btn-sm btn-danger w-100"
-                                                    onclick="confirmDelete({{ $file->id }})">
+                                                    onclick="confirmDelete({{ $file->id }})" style="border-radius:12px;">
                                                     <i class="fa fa-trash"></i> Hapus
                                                 </button>
 
@@ -212,11 +210,11 @@
                     fileDisplay.classList.add('d-flex', 'align-items-center', 'justify-content-between');
 
                     fileDisplay.innerHTML = `
-                                                                                            <small class="text-success"><i class="fa fa-file-excel me-2"></i>${fileName}</small>
-                                                                                            <button type="button" id="clearFileBtn" class="btn btn-sm btn-outline-danger ms-2">
-                                                                                                <i class="fa fa-times"></i>
-                                                                                            </button>
-                                                                                        `;
+                                                                                                <small class="text-success"><i class="fa fa-file-excel me-2"></i>${fileName}</small>
+                                                                                                <button type="button" id="clearFileBtn" class="btn btn-sm btn-outline-danger ms-2">
+                                                                                                    <i class="fa fa-times"></i>
+                                                                                                </button>
+                                                                                            `;
 
                     fileInfo.appendChild(fileDisplay);
 
@@ -295,16 +293,16 @@
                 Swal.fire({
                     title: 'Download Template Excel?',
                     html: `
-                                                                                                                                                <div class="text-start" style="color: black;">
-                                                                                                                                                    <p style="color: black;"><b>Pastikan Anda:</b></p>
-                                                                                                                                                    <ul style="text-align: left; padding-left: 18px;">
-                                                                                                                                                        <li style="color: black;">Mengisi data <b>hanya pada sheet <u>KERTAS KERJA</u></b>.</li>
-                                                                                                                                                        <li style="color: black;">Mengikuti petunjuk pengisian sesuai <b>catatan (note)</b> di dalam file template.</li>
-                                                                                                                                                        <li style="color: black;">Tidak mengubah struktur kolom atau format bawaan.</li>
-                                                                                                                                                    </ul>
-                                                                                                                                                </div>
+                                                                                                                                                        <div class="text-start" style="color: black;">
+                                                                                                                                                            <p style="color: black;"><b>Pastikan Anda:</b></p>
+                                                                                                                                                            <ul style="text-align: left; padding-left: 18px;">
+                                                                                                                                                                <li style="color: black;">Mengisi data <b>hanya pada sheet <u>KERTAS KERJA</u></b>.</li>
+                                                                                                                                                                <li style="color: black;">Mengikuti petunjuk pengisian sesuai <b>catatan (note)</b> di dalam file template.</li>
+                                                                                                                                                                <li style="color: black;">Tidak mengubah struktur kolom atau format bawaan.</li>
+                                                                                                                                                            </ul>
+                                                                                                                                                        </div>
 
-                                                                                                                                        `,
+                                                                                                                                                `,
                     icon: 'info',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',

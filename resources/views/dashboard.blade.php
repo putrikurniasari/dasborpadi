@@ -1,20 +1,6 @@
 @extends('layouts.app', ['pageSlug' => 'dashboard'])
 <x-slot:title>{{$title}}</x-slot:title>
 
-@php
-    function sortButtons($column)
-    {
-        $base = '?sort_by=' . $column . '&search=' . request('search');
-
-        return "
-                    <span class='sort-icons'>
-                        <a href=\"{$base}&sort_order=asc\" class=\"sort-btn\">▲</a>
-                        <a href=\"{$base}&sort_order=desc\" class=\"sort-btn\">▼</a>
-                    </span>
-                ";
-    }
-@endphp
-
 
 
 @section('content')
@@ -38,81 +24,109 @@
             </div>
         </div>
 
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card card-chart animate__animated animate__fadeInUp">
-                    <div class="card-header">
-                        <h5 class="card-category mb-0">Data Realisasi Padi UMKM</h5>
-                        <h2 class="card-title mb-0">Tabel Realisasi Anggaran</h2>
-                    </div>
-
-                    <div class="row justify-content-center mt-4">
-                        <div class="col-sm-8">
-                            <input type="text" id="search" class="form-control mb-4" placeholder="search . . "
-                                value="{{ request('search') }}">
-                        </div>
-                    </div>
-
-                    <div class="card-body table-responsive">
-                        <table class="table table-striped table-hover align-middle">
-                            <thead class="text-center">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Tahun {!! sortButtons('tahun') !!}</th>
-                                    <th>Bulan {!! sortButtons('bulan') !!}</th>
-                                    <th>Target Tahun {!! sortButtons('target_tahun') !!}</th>
-                                    <th>Target s/d Bulan {!! sortButtons('target_sd_bulan') !!}</th>
-                                    <th>Realisasi s/d Bulan {!! sortButtons('realisasi_sd_bulan') !!}</th>
-                                    <th>Sisa Target {!! sortButtons('sisa_target') !!}</th>
-                                    <th>Selisih (Rp) {!! sortButtons('selisih_rp') !!}</th>
-                                    <th>% Capaian {!! sortButtons('persentase_capaian') !!}</th>
-                                </tr>
-
-
-                            </thead>
-                            <tbody class="text-center">
-                                @foreach($dataRealisasi as $row)
-                                    <tr>
-                                        <td>{{ $loop->iteration }}</td>
-                                        <td>{{ $row->tahun }}</td>
-                                        <td>{{ \Carbon\Carbon::create()->month($row->bulan)->translatedFormat('F') }}</td>
-                                        <td>{{ number_format($row->target_tahun, 0, ',', '.') }}</td>
-                                        <td>{{ number_format($row->target_sd_bulan, 0, ',', '.') }}</td>
-                                        <td>{{ number_format($row->realisasi_sd_bulan, 0, ',', '.') }}</td>
-                                        <td>{{ number_format($row->sisa_target, 0, ',', '.') }}</td>
-                                        <td>{{ number_format($row->selisih_rp, 0, ',', '.') }}</td>
-                                        <td>{{ $row->persentase_capaian }}%</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                        <div class="d-flex justify-content-center mt-3">
-                            {{ $dataRealisasi->links('pagination::bootstrap-5') }}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
+        <!-- 🔹 Card atas -->
         <div class="row">
             <div class="col-12">
                 <div class="card card-chart animate__animated animate__fadeInUp">
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center filter-header flex-column">
-                            <div class="w-100">
-                                <h5 class="card-category mb-0" id="atas_title">Total Target & Realisasi Anggaran</h5>
-                                <h2 class="card-title mb-0" id="cardTitle">Realisasi Padi UMKM</h2>
+                            <div class="d-flex w-100 align-items-center justify-content-between">
+                                <div>
+                                    <h5 class="card-category mb-0" id="atas_title">Total Target & Realisasi Anggaran</h5>
+                                    <h2 class="card-title mb-0" id="cardTitle">Realisasi Padi UMKM</h2>
+                                </div>
+
+                                <a class="btn btn-outline-info btn-lg" id="btnlihatgrafik" style="border-radius:12px;">
+                                    Lihat Grafik
+                                </a>
                             </div>
+
 
                             <!-- Tombol kembali -->
                             <div class="mt-2 w-100">
-                                <button id="btnKembaliChart" class="btn btn-sm btn-outline-secondary">
+                                <button id="btnKembaliChart" class="btn btn-sm btn-outline-secondary"
+                                    style="border-radius:12px;">
                                     <i class="fa fa-arrow-left"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
+                        <div class="row justify-content-center mt-4" id="searchtabel">
+                            <div class="col-sm-6">
+                                <input type="text" id="search" class="form-control mb-4" placeholder="search . . "
+                                    value="{{ request('search') }}">
+                            </div>
+
+                            <div class="col-sm-3">
+                                <select id="filterTahunAtas" class="form-select mb-4">
+                                    <option value="">-- Semua Tahun --</option>
+                                    @foreach($tahunList as $th)
+                                        <option value="{{ $th->tahun }}">{{ $th->tahun }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                        </div>
+
+
+                        <div class="card-body table-responsive" id="chartBig1WrapperDefault">
+                            <table class="table table-striped table-hover align-middle group-separator-bt">
+                                <thead class="text-center align-middle">
+                                    <tr class="group-separator-bt">
+                                        <th class="group-separator group-separator-lf " rowspan="2">No</th>
+                                        <th class="group-separator" rowspan="2">Tahun</th>
+                                        <th rowspan="2" class="group-separator">Bulan</th>
+                                        <th colspan="3" class="group-separator">Bulan ini</th>
+                                        <th colspan="3" class="group-separator">S.D Bulan ini</th>
+                                    </tr>
+                                    <tr class="group-separator-bt">
+                                        <th class="group-separator">Target</th>
+                                        <th class="group-separator">Realisasi</th>
+                                        <th class="group-separator">Selisih</th>
+                                        <th class="group-separator">Target</th>
+                                        <th class="group-separator">Realisasi</th>
+                                        <th class="group-separator">Selisih</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody class="text-center">
+                                    @foreach($dataRealisasiAJAX ?? $dataRealisasi as $row)
+                                        <tr>
+                                            <td class="group-separator-lf group-separator-isi">{{ $loop->iteration }}</td>
+                                            <td class="group-separator-isi">{{ $row->tahun }}</td>
+
+                                            <td class="group-separator">
+                                                {{ \Carbon\Carbon::create()->locale('id')->month($row->bulan)->translatedFormat('F') }}
+                                            </td>
+
+                                            <!-- Bulan ini -->
+                                            <td class="group-separator-isi">{{ number_format($row->target_bulan, 0, ',', '.') }}
+                                            </td>
+                                            <td class="group-separator-isi">
+                                                {{ number_format($row->realisasi_bulan, 0, ',', '.') }}
+                                            </td>
+                                            <td class="group-separator"
+                                                style="color:{{ $row->selisih_bulan < 0 ? 'red' : 'green' }}">
+                                                {{ number_format($row->selisih_bulan, 0, ',', '.') }}
+                                            </td>
+
+                                            <!-- S.D Bulan ini -->
+                                            <td class="group-separator-isi">
+                                                {{ number_format($row->target_sd_bulan, 0, ',', '.') }}
+                                            </td>
+                                            <td class="group-separator-isi">
+                                                {{ number_format($row->realisasi_sd_bulan, 0, ',', '.') }}
+                                            </td>
+                                            <td class="group-separator"
+                                                style="color:{{ $row->selisih_sd_bulan < 0 ? 'red' : 'green' }}">
+                                                {{ number_format($row->selisih_sd_bulan, 0, ',', '.') }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                         <div class="chart-area" id="chartBig1Wrapper">
                             <canvas id="chartBig1"></canvas>
                         </div>
@@ -150,13 +164,91 @@
                             </div>
                         </div>
 
+
+                        <div class="card-body table-responsive" id="chartBig2WrapperDefault">
+                            <table class="table table-striped table-hover align-middle group-separator-bt">
+                                <thead class="text-center align-middle">
+                                    <tr class="group-separator-bt">
+                                        <th class="group-separator group-separator-lf" rowspan="2">No</th>
+
+                                        <th class="group-separator" rowspan="2">Tahun</th>
+                                        <th rowspan="2" class="group-separator">
+
+                                            <select id="filterBulan" class="form-select" style="min-width:120px;">
+                                                @foreach(range(1, 12) as $b)
+                                                    <option value="{{ $b }}" {{ (request('filter_bulan') ?? 1) == $b ? 'selected' : '' }}>
+                                                        {{ \Carbon\Carbon::create()->month($b)->translatedFormat('F') }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+
+
+                                        </th>
+
+                                        <th rowspan="2" class="group-separator">Nama Kebun</th>
+                                        <th colspan="2" class="group-separator">Transaksi</th>
+                                        <th rowspan="2" class="group-separator">Plafond OPL</th>
+                                        <th rowspan="2" class="group-separator">Persentase Terhadap Plafond</th>
+                                    </tr>
+
+                                    <tr class="group-separator-bt">
+                                        <th class="group-separator">Padi Bulan Ini</th>
+                                        <th class="group-separator">Padi S.D Bulan Ini</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody class="text-center" id="tbodyPembelian">
+                                    @foreach($dataPembelian as $row)
+                                        <tr>
+                                            <td class="group-separator-lf group-separator-isi">
+                                                {{ $loop->iteration }}
+                                            </td>
+
+                                            <td class="group-separator-isi">
+                                                {{ $row->tahun }}
+                                            </td>
+
+                                            <td class="group-separator-isi">
+                                                {{ \Carbon\Carbon::create()->locale('id')->month($row->bulan)->translatedFormat('F') }}
+                                            </td>
+
+                                            <td class="group-separator-isi">
+                                                {{ $row->deskripsi }}
+                                            </td>
+
+                                            <!-- Transaksi -->
+                                            <td class="group-separator-isi">
+                                                {{ number_format($row->transaksi_padi, 0, ',', '.') }}
+                                            </td>
+
+                                            <td class="group-separator group-separator-isi">
+                                                {{ number_format($row->transaksi_padi_sd, 0, ',', '.') }}
+                                            </td>
+
+                                            <!-- Plafond -->
+                                            <td class="group-separator-isi">
+                                                {{ number_format($row->plafond_opl, 0, ',', '.') }}
+                                            </td>
+
+                                            <!-- Persentase -->
+                                            <td class="group-separator-isi"
+                                                style="color: {{ $row->persen_terhadap_plafond < 100 ? 'red' : 'green' }};">
+                                                {{ $row->persen_terhadap_plafond }}%
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+
                         <!-- Tombol kembali -->
                         <div class="mt-2 w-100">
-                            <button id="btnKembaliChart2" class="btn btn-sm btn-outline-secondary">
+                            <button id="btnKembaliChart2" class="btn btn-sm btn-outline-secondary"
+                                style="border-radius:12px;">
                                 <i class="fa fa-arrow-left"></i>
                             </button>
                         </div>
-                    </div>
+                        </div>
 
                     <div class="card-body" id="chartPembelianWrapper">
                         <div class="chart-area">
@@ -170,65 +262,36 @@
 @endsection
 
 <style>
-    th {
-        position: relative;
-        white-space: nowrap; /* supaya tidak turun baris */
+    /* Garis tebal pembatas antara 2 grup kolom */
+
+    th.group-separator-isi,
+    td.group-separator-isi {
+        border-right: 1px solid #000000ff !important;
     }
 
-    .sort-icons {
-        font-size: 9px;
-        margin-left: 4px;
-        display: inline-flex;
-        flex-direction: column;
-        line-height: 9px;
-        vertical-align: middle;
-        opacity: 0.6;
+    th.group-separator,
+    td.group-separator {
+        border-right: 2px solid #000 !important;
     }
 
-    .sort-btn {
-        color: inherit !important;
-        text-decoration: none;
-        cursor: pointer;
+    th.group-separator-lf,
+    td.group-separator-lf {
+        border-left: 2px solid #000 !important;
     }
 
-    .sort-btn:hover {
-        opacity: 1;
+    table.group-separator-bt,
+    tr.group-separator-bt,
+    th.group-separator-bt,
+    td.group-separator-bt {
+        border-bottom: 2px solid #000 !important;
+        border-top: 2px solid #000 !important;
+    }
+
+    /* Rapikan border tabel */
+    table {
+        border-collapse: collapse;
     }
 </style>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        // 🔹 1. Cegah notifikasi demo dari Black Dashboard
-        if (typeof demo !== 'undefined') {
-            demo.showNotification = function () { };
-        }
-
-        // 🔹 2. Cegah notifikasi dari bootstrap-notify
-        if ($.notify) {
-            $.notify = function () { };
-        }
-
-        // 🔹 3. Hilangkan notifikasi yang muncul
-        setTimeout(() => {
-            document.querySelectorAll('.alert.alert-warning, .alert').forEach(el => {
-                if (el.innerText.includes('Change your password') || el.innerText.includes('notifikasi')) {
-                    el.remove();
-                }
-            });
-        }, 500);
-
-        // 🔹 4. Awasi DOM jika notifikasi muncul lagi
-        const observer = new MutationObserver(() => {
-            document.querySelectorAll('.alert.alert-warning, .alert').forEach(el => {
-                if (el.innerText.includes('Change your password') || el.innerText.includes('notifikasi')) {
-                    el.remove();
-                }
-            });
-        });
-
-        observer.observe(document.body, { childList: true, subtree: true });
-    });
-</script>
 
 @if (session('login_success'))
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -248,3 +311,110 @@
         });
     </script>
 @endif
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const filterTahunAtas = document.getElementById("filterTahunAtas");
+        const tbodyAtas = document.querySelector("#chartBig1WrapperDefault tbody");
+
+        filterTahunAtas.addEventListener("change", () => {
+
+            const tahun = filterTahunAtas.value;
+
+            // jika value == 0, fetch tanpa filter (kembalikan default)
+            const url = tahun === "" ? `/ajax/realisasi` : `/ajax/realisasi?tahun=${tahun}`;
+
+            if (tahun === "") {
+                document.location.href = document.location.pathname;
+                return;
+            }
+
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+
+                    tbodyAtas.innerHTML = "";
+                    let no = 1;
+
+                    data.forEach(row => {
+
+                        tbodyAtas.innerHTML += `
+                        <tr>
+                            <td class="group-separator-lf group-separator-isi">${no++}</td>
+                            <td class="group-separator-isi">{{ $row->tahun }}</td>
+                            <td class="group-separator">${new Date(2000, row.bulan - 1).toLocaleString('id', { month: 'long' })}</td>
+                            <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.target_bulan)}</td>
+                            <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.realisasi_bulan)}</td>
+                            <td class="group-separator" style="color:${row.selisih_bulan < 0 ? 'red' : 'green'}">
+                                ${Intl.NumberFormat('id-ID').format(row.selisih_bulan)}
+                            </td>
+                            <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.target_sd_bulan)}</td>
+                            <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.realisasi_sd_bulan)}</td>
+                            <td class="group-separator" style="color:${row.selisih_sd_bulan < 0 ? 'red' : 'green'}">
+                                ${Intl.NumberFormat('id-ID').format(row.selisih_sd_bulan)}
+                            </td>
+                        </tr>`;
+                    });
+                });
+        });
+
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const filterBulan = document.getElementById('filterBulan');
+        const tbody = document.getElementById('tbodyPembelian');
+
+        filterBulan.addEventListener('change', () => {
+
+            const tahun = new URLSearchParams(window.location.search).get("filter_tahun") ?? "";
+            const bulan = filterBulan.value;
+
+            fetch(`/ajax/pembelian?filter_bulan=${bulan}`)
+                .then(res => res.json())
+                .then(data => {
+
+                    tbody.innerHTML = "";
+                    let no = 1;
+
+                    data.forEach(row => {
+
+                        tbody.innerHTML += `
+                        <tr>
+                            <td class="group-separator-lf group-separator-isi">${no++}</td>
+
+                            ${!tahun ? `<td class="group-separator-isi">${row.tahun}</td>` : ""}
+
+                            <td class="group-separator-isi">
+                                ${new Date(2000, row.bulan - 1).toLocaleString('id', { month: 'long' })}
+                            </td>
+
+                            <td class="group-separator-isi">${row.deskripsi}</td>
+
+                            <td class="group-separator-isi">
+                                ${Intl.NumberFormat('id-ID').format(row.transaksi_padi)}
+                            </td>
+
+                            <td class="group-separator-isi">
+                                ${Intl.NumberFormat('id-ID').format(row.transaksi_padi_sd)}
+                            </td>
+
+                            <td class="group-separator-isi">
+                                ${Intl.NumberFormat('id-ID').format(row.plafond_opl)}
+                            </td>
+
+                            <td class="group-separator-isi" style="color:${row.persen_terhadap_plafond < 100 ? 'red' : 'green'};">
+                                ${row.persen_terhadap_plafond}%
+                            </td>
+                        </tr>
+                    `;
+                    });
+
+                });
+        });
+
+    });
+</script>

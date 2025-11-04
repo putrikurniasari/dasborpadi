@@ -17,6 +17,11 @@ use App\Http\Controllers\ExcelController;
 Route::get('/', fn() => redirect()->route('dashboard'));
 Route::get('/home', fn() => redirect()->route('dashboard'))->name('home');
 
+// Route ajax realtime
+Route::get('/ajax/realisasi', [DashboardController::class, 'ajaxRealisasi']);
+Route::get('/ajax/pembelian', [DashboardController::class, 'ajaxPembelian']);
+
+
 
 
 // ✅ AUTH ROUTES

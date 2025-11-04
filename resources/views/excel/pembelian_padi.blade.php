@@ -29,12 +29,12 @@
                             </div>
                             {{-- Tombol tampilkan form upload --}}
                             <div class="d-flex align-items-center gap-3"> <!-- Gunakan gap agar antar tombol berjarak -->
-                                <button class="btn btn-outline-info" type="button" onclick="confirmDownloadTemplate()">
+                                <button class="btn btn-outline-info" type="button" onclick="confirmDownloadTemplate()" style="border-radius:12px;">
                                     <i class="fa fa-download"></i> Download Template
                                 </button>
 
                                 <button class="btn btn-success" data-bs-toggle="collapse" data-bs-target="#formUploadExcel"
-                                    aria-expanded="false" aria-controls="formUploadExcel">
+                                    aria-expanded="false" aria-controls="formUploadExcel" style="border-radius:12px;">
                                     <i class="fa fa-plus"></i> Upload Excel
                                 </button>
 
@@ -113,7 +113,7 @@
                                     </div>
 
                                     <div class="text-end mt-3">
-                                        <button type="submit" class="btn btn-primary">Upload</button>
+                                        <button type="submit" class="btn btn-primary" style="border-radius:12px;">Upload</button>
                                     </div>
                                 </form>
                             </div>
@@ -143,11 +143,11 @@
                                         <td class="text-center">
                                             <div class="d-flex flex-column gap-2">
                                                 <a href="{{ asset('storage/' . $file->file_excel) }}" target="_blank"
-                                                    class="btn btn-sm btn-info w-100 mb-1">
+                                                    class="btn btn-sm btn-info w-100 mb-1" style="border-radius:12px;">
                                                     <i class="fa fa-download"></i> Download
                                                 </a>
                                                 <button type="button" class="btn btn-sm btn-danger w-100"
-                                                    onclick="confirmDelete({{ $file->id }})">
+                                                    onclick="confirmDelete({{ $file->id }})" style="border-radius:12px;">
                                                     <i class="fa fa-trash"></i> Hapus
                                                 </button>
 

@@ -17,10 +17,13 @@ class RealisasiPadiUmkm extends Model
         'tahun',
         'bulan',
         'target_tahun',
+        'target_bulan',
         'target_sd_bulan',
+        'realisasi_bulan',
         'realisasi_sd_bulan',
         'sisa_target',
-        'selisih_rp',
+        'selisih_bulan',
+        'selisih_sd_bulan',
         'persentase_capaian',
     ];
 

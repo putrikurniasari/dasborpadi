@@ -23,7 +23,7 @@
     align-items: center;
     gap: 6px;
     background: #23243a;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 4px 10px;
     box-shadow: 0 2px 8px 0 rgba(94, 114, 228, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.08);
     border: 1px solid #35376c;
@@ -37,7 +37,7 @@
     font-weight: 600;
     color: #a3aed6;
     background: transparent;
-    border-radius: 6px;
+    border-radius: 12px;
     padding: 0 0.5rem 0 0;
     margin-bottom: 0;
     font-size: 1rem;
@@ -53,7 +53,7 @@
 .filter-upload-input {
     font-size: 0.85rem;
     font-weight: 500;
-    border-radius: 7px;
+    border-radius: 12px;
     border: 1px solid #7f83b7;
     background: #23243a;
     color: #fff;
@@ -127,7 +127,7 @@
     align-items: center;
     gap: 6px;
     background: #23243a;
-    border-radius: 10px;
+    border-radius: 12px;
     padding: 4px 10px;
     box-shadow: 0 2px 8px 0 rgba(94, 114, 228, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.08);
     border: 1px solid #35376c;
@@ -139,7 +139,7 @@
     font-weight: 600;
     color: #a3aed6;
     background: transparent;
-    border-radius: 6px;
+    border-radius: 12px;
     padding: 0 0.5rem 0 0;
     margin-bottom: 0;
     font-size: 1rem;
@@ -153,7 +153,7 @@
 .filter-tahun-select {
     font-size: 0.85rem;
     font-weight: 500;
-    border-radius: 7px;
+    border-radius: 12px;
     border: 1px solid #7f83b7;
     background: #23243a;
     color: #fff;

@@ -76,12 +76,25 @@ class RealisasiPadiUmkmController extends Controller
 
         // Ambil data dari sel
         $perusahaan = $sheet->getCell('C6')->getCalculatedValue();
-        $target_tahun = $sheet->getCell('F6')->getCalculatedValue();
+        if ($request->bulan == 1) {
+            $target_tahun = $sheet->getCell('D6')->getCalculatedValue();
+        }else{
+            $target_tahun = $sheet->getCell('F6')->getCalculatedValue();
+        }
+        $target_bulan = $target_tahun / 12;
         $target_sd_bulan = $sheet->getCell('G6')->getCalculatedValue();
         $realisasi_sd_bulan = $sheet->getCell('H6')->getCalculatedValue();
+        
+        if ($request->bulan == 1) {
+            $realisasi_bulan =$realisasi_sd_bulan;    
+        }else{
+            $realisasi_bulan = null;
+        }
         $sisa_target = $sheet->getCell('I6')->getCalculatedValue();
-        $selisih_rp = $sheet->getCell('J6')->getCalculatedValue();
+        $selisih_bulan = $realisasi_bulan - (float) $target_bulan;
+        $selisih_sd_bulan = $sheet->getCell('J6')->getCalculatedValue();
         $persentase_capaian = $sheet->getCell('K6')->getCalculatedValue();
+
 
         // === Simpan data ke tabel realisasi_padi_umkm ===
         DB::table('realisasi_padi_umkm')->insert([
@@ -90,10 +103,13 @@ class RealisasiPadiUmkmController extends Controller
             'tahun' => $request->tahun,
             'bulan' => $request->bulan,
             'target_tahun' => $target_tahun,
+            'target_bulan' => $target_bulan,
             'target_sd_bulan' => $target_sd_bulan,
+            'realisasi_bulan' => $realisasi_bulan,
             'realisasi_sd_bulan' => $realisasi_sd_bulan,
             'sisa_target' => $sisa_target,
-            'selisih_rp' => $selisih_rp,
+            'selisih_bulan' => $selisih_bulan,
+            'selisih_sd_bulan' => $selisih_sd_bulan,
             'persentase_capaian' => $persentase_capaian,
             'created_at' => now(),
             'updated_at' => now(),
