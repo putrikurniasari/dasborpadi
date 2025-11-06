@@ -74,7 +74,77 @@ class DashboardController extends Controller
 
         return response()->json($query->get());
     }
+    public function ajaxSearchRealisasi(Request $request)
+    {
+        $search = $request->search;
 
+        $data = DB::table('realisasi_padi_umkm')
+            ->where(function ($q) use ($search) {
+                $q->where('tahun', 'like', "%$search%")
+                    ->orWhere('target_bulan', 'like', "%$search%")
+                    ->orWhere('realisasi_bulan', 'like', "%$search%")
 
+                    // ✅ Cari angka bulan
+                    ->orWhere('bulan', 'like', "%$search%")
+
+                    // ✅ Cari nama bulan berdasarkan angka
+                    ->orWhereRaw("
+                    CASE bulan
+                        WHEN 1 THEN 'januari'
+                        WHEN 2 THEN 'februari'
+                        WHEN 3 THEN 'maret'
+                        WHEN 4 THEN 'april'
+                        WHEN 5 THEN 'mei'
+                        WHEN 6 THEN 'juni'
+                        WHEN 7 THEN 'juli'
+                        WHEN 8 THEN 'agustus'
+                        WHEN 9 THEN 'september'
+                        WHEN 10 THEN 'oktober'
+                        WHEN 11 THEN 'november'
+                        WHEN 12 THEN 'desember'
+                    END LIKE ?
+                ", ["%$search%"]);
+            })
+            ->orderBy('tahun')
+            ->orderBy('bulan')
+            ->get();
+
+        return response()->json($data);
+    }
+
+    public function ajaxSearchPembelian(Request $request)
+    {
+        $search = $request->search;
+
+        $data = DB::table('pembelian_padi')
+            ->where(function ($q) use ($search) {
+                $q->where('tahun', 'like', "%$search%")
+                    ->orWhere('deskripsi', 'like', "%$search%")  // nama kebun
+                    ->orWhere('transaksi_padi', 'like', "%$search%")
+                    ->orWhere('transaksi_padi_sd', 'like', "%$search%")
+                    ->orWhere('plafond_opl', 'like', "%$search%")
+                    ->orWhereRaw("
+                    CASE bulan
+                        WHEN 1 THEN 'januari'
+                        WHEN 2 THEN 'februari'
+                        WHEN 3 THEN 'maret'
+                        WHEN 4 THEN 'april'
+                        WHEN 5 THEN 'mei'
+                        WHEN 6 THEN 'juni'
+                        WHEN 7 THEN 'juli'
+                        WHEN 8 THEN 'agustus'
+                        WHEN 9 THEN 'september'
+                        WHEN 10 THEN 'oktober'
+                        WHEN 11 THEN 'november'
+                        WHEN 12 THEN 'desember'
+                    END LIKE ?
+              ", ["%$search%"]);
+            })
+            ->orderBy('tahun')
+            ->orderBy('bulan')
+            ->get();
+
+        return response()->json($data);
+    }
 
 }

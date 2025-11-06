@@ -20,6 +20,10 @@ Route::get('/home', fn() => redirect()->route('dashboard'))->name('home');
 // Route ajax realtime
 Route::get('/ajax/realisasi', [DashboardController::class, 'ajaxRealisasi']);
 Route::get('/ajax/pembelian', [DashboardController::class, 'ajaxPembelian']);
+Route::get('/ajax/search-realisasi', [DashboardController::class, 'ajaxSearchRealisasi']);
+Route::get('/ajax/search-pembelian', [DashboardController::class, 'ajaxSearchPembelian']);
+
+
 
 
 
@@ -27,7 +31,7 @@ Route::get('/ajax/pembelian', [DashboardController::class, 'ajaxPembelian']);
 // ✅ AUTH ROUTES
 // Tampilkan halaman gabungan login-register
 Route::get('/auth', function () {
-    return view('auth.auth', ['title' => 'Login & Register']);
+    return view('auth.auth', ['title' => 'Padi | Login & Register']);
 })->name('auth');
 
 // Proses login

@@ -2,18 +2,19 @@
 <nav class="pc-sidebar pc-trigger">
   <div class="navbar-wrapper">
     <div class="m-header">
-      <a href="../dashboard/index.html" class="b-brand text-primary">
-        <!-- ========   Change your logo from here   ============ -->
-        <img src="../assets/images/logo-dark.svg" class="img-fluid logo-lg" alt="logo">
-        <span class="badge bg-light-success rounded-pill ms-2 theme-version">v2.6.0</span>
+      <a href="../dashboard/index.html" class="b-brand text-primary d-flex align-items-center">
+        <!-- Ganti logo dengan teks -->
+        <span class="fw-bold fs-4">Monitoring Padi</span>
+        <!-- <span class="badge bg-light-success rounded-pill ms-2 theme-version">v2.6.0</span> -->
       </a>
     </div>
+
     <div class="navbar-content">
       <div class="card pc-user-card">
         <div class="card-body">
           <div class="d-flex align-items-center">
             <div class="flex-shrink-0">
-              <img src="../assets/images/user/avatar-1.jpg" alt="user-image" class="user-avtar wid-45 rounded-circle" />
+              <img src="{{ asset('assets/images/favicon.png') }}" alt="user-image" class="user-avtar wid-45 rounded-circle" />
             </div>
             <div class="flex-grow-1 ms-3 me-2">
               <h6 class="mb-0">{{ old('username', $user->username ?? '') }}</h6>
@@ -63,7 +64,8 @@
                 data-feather="chevron-right"></i></span></a>
           <ul class="pc-submenu">
             <li class="pc-item"><a class="pc-link" href="{{ route('excel.pembelian_padi') }}">Pembelian Padi</a></li>
-            <li class="pc-item"><a class="pc-link" href="{{ route('excel.realisasi_umkm') }}">Realisasi Padi UMKM</a></li>
+            <li class="pc-item"><a class="pc-link" href="{{ route('excel.realisasi_umkm') }}">Realisasi Padi UMKM</a>
+            </li>
           </ul>
         </li>
       </ul>

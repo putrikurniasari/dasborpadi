@@ -78,17 +78,26 @@ class RealisasiPadiUmkmController extends Controller
         $perusahaan = $sheet->getCell('C6')->getCalculatedValue();
         if ($request->bulan == 1) {
             $target_tahun = $sheet->getCell('D6')->getCalculatedValue();
-        }else{
+        } else {
             $target_tahun = $sheet->getCell('F6')->getCalculatedValue();
         }
         $target_bulan = $target_tahun / 12;
         $target_sd_bulan = $sheet->getCell('G6')->getCalculatedValue();
         $realisasi_sd_bulan = $sheet->getCell('H6')->getCalculatedValue();
-        
+
         if ($request->bulan == 1) {
-            $realisasi_bulan =$realisasi_sd_bulan;    
-        }else{
-            $realisasi_bulan = null;
+            $realisasi_bulan = $realisasi_sd_bulan;
+        } else {
+            $bulan_sebelumnya = $request->bulan - 1;
+
+            // Query database untuk ambil kumulatif bulan sebelumnya
+            $realisasi_sd_bulan_sebelumnya = DB::table('realisasi_padi_umkm')
+                ->where('tahun', $request->tahun)
+                ->where('bulan', $bulan_sebelumnya)
+                ->value('realisasi_sd_bulan') ?? 0;
+
+            // Hitung realisasi per bulan (non kumulatif)
+            $realisasi_bulan = $realisasi_sd_bulan - $realisasi_sd_bulan_sebelumnya;
         }
         $sisa_target = $sheet->getCell('I6')->getCalculatedValue();
         $selisih_bulan = $realisasi_bulan - (float) $target_bulan;

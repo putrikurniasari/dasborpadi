@@ -165,8 +165,13 @@
                         </div>
 
 
-                        <div class="card-body table-responsive" id="chartBig2WrapperDefault">
-                            <table class="table table-striped table-hover align-middle group-separator-bt">
+                        <div class="card-body" id="chartBig2WrapperDefault">
+                            <div class="col-sm-12 d-flex justify-content-center mb-3">
+                                <input type="text" id="searchPembelian" class="form-control" placeholder="search..." value="{{ request('searchPembelian') }}">
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover align-middle group-separator-bt">
                                 <thead class="text-center align-middle">
                                     <tr class="group-separator-bt">
                                         <th class="group-separator group-separator-lf" rowspan="2">No</th>
@@ -212,7 +217,7 @@
                                                 {{ \Carbon\Carbon::create()->locale('id')->month($row->bulan)->translatedFormat('F') }}
                                             </td>
 
-                                            <td class="group-separator-isi">
+                                            <td class="group-separator">
                                                 {{ $row->deskripsi }}
                                             </td>
 
@@ -231,14 +236,19 @@
                                             </td>
 
                                             <!-- Persentase -->
-                                            <td class="group-separator-isi"
-                                                style="color: {{ $row->persen_terhadap_plafond < 100 ? 'red' : 'green' }};">
-                                                {{ $row->persen_terhadap_plafond }}%
+                                            <td class="group-separator"
+                                            style="color: {{
+                                                $row->persen_terhadap_plafond * 100 < 50 ? 'red' :
+                                                ($row->persen_terhadap_plafond * 100 < 75 ? 'orange' :
+                                                ($row->persen_terhadap_plafond * 100 < 100 ? 'green' : 'green'))
+                                            }};">
+                                            {{ number_format($row->persen_terhadap_plafond * 100, 0) }}%
                                             </td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
+                            </div>
                         </div>
 
                         <!-- Tombol kembali -->
@@ -313,16 +323,63 @@
 @endif
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
-        const filterTahunAtas = document.getElementById("filterTahunAtas");
-        const tbodyAtas = document.querySelector("#chartBig1WrapperDefault tbody");
+    /* ===============================
+       SEARCH REALISASI (TABEL ATAS)
+    ================================ */
 
+    const searchInput = document.getElementById("search");
+    const tbodyAtas = document.querySelector("#chartBig1WrapperDefault tbody");
+
+    if (searchInput && tbodyAtas) {
+        searchInput.addEventListener("keyup", () => {
+            const keyword = searchInput.value.trim();
+
+            fetch(`/ajax/search-realisasi?search=${keyword}`)
+                .then(res => res.json())
+                .then(data => {
+
+                    tbodyAtas.innerHTML = "";
+                    let no = 1;
+
+                    data.forEach(row => {
+                        tbodyAtas.innerHTML += `
+                            <tr>
+                                <td class="group-separator-lf group-separator-isi">${no++}</td>
+                                <td class="group-separator-isi">${row.tahun}</td>
+                                <td class="group-separator">
+                                    ${new Date(2000, row.bulan - 1).toLocaleString('id', { month: 'long' })}
+                                </td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.target_bulan)}</td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.realisasi_bulan)}</td>
+                                <td class="group-separator" style="color:${row.selisih_bulan < 0 ? 'red' : 'green'}">
+                                    ${Intl.NumberFormat('id-ID').format(row.selisih_bulan)}
+                                </td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.target_sd_bulan)}</td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.realisasi_sd_bulan)}</td>
+                                <td class="group-separator" style="color:${row.selisih_sd_bulan < 0 ? 'red' : 'green'}">
+                                    ${Intl.NumberFormat('id-ID').format(row.selisih_sd_bulan)}
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                });
+        });
+    }
+
+    /* ===============================
+       FILTER TAHUN (TABEL ATAS)
+    ================================ */
+
+    const filterTahunAtas = document.getElementById("filterTahunAtas");
+
+    if (filterTahunAtas && tbodyAtas) {
         filterTahunAtas.addEventListener("change", () => {
 
             const tahun = filterTahunAtas.value;
 
-            // jika value == 0, fetch tanpa filter (kembalikan default)
             const url = tahun === "" ? `/ajax/realisasi` : `/ajax/realisasi?tahun=${tahun}`;
 
             if (tahun === "") {
@@ -338,83 +395,122 @@
                     let no = 1;
 
                     data.forEach(row => {
-
                         tbodyAtas.innerHTML += `
-                        <tr>
-                            <td class="group-separator-lf group-separator-isi">${no++}</td>
-                            <td class="group-separator-isi">{{ $row->tahun }}</td>
-                            <td class="group-separator">${new Date(2000, row.bulan - 1).toLocaleString('id', { month: 'long' })}</td>
-                            <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.target_bulan)}</td>
-                            <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.realisasi_bulan)}</td>
-                            <td class="group-separator" style="color:${row.selisih_bulan < 0 ? 'red' : 'green'}">
-                                ${Intl.NumberFormat('id-ID').format(row.selisih_bulan)}
-                            </td>
-                            <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.target_sd_bulan)}</td>
-                            <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.realisasi_sd_bulan)}</td>
-                            <td class="group-separator" style="color:${row.selisih_sd_bulan < 0 ? 'red' : 'green'}">
-                                ${Intl.NumberFormat('id-ID').format(row.selisih_sd_bulan)}
-                            </td>
-                        </tr>`;
+                            <tr>
+                                <td class="group-separator-lf group-separator-isi">${no++}</td>
+                                <td class="group-separator-isi">${row.tahun}</td>
+                                <td class="group-separator">
+                                    ${new Date(2000, row.bulan - 1).toLocaleString('id', { month: 'long' })}
+                                </td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.target_bulan)}</td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.realisasi_bulan)}</td>
+                                <td class="group-separator" style="color:${row.selisih_bulan < 0 ? 'red' : 'green'}">
+                                    ${Intl.NumberFormat('id-ID').format(row.selisih_bulan)}
+                                </td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.target_sd_bulan)}</td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.realisasi_sd_bulan)}</td>
+                                <td class="group-separator" style="color:${row.selisih_sd_bulan < 0 ? 'red' : 'green'}">
+                                    ${Intl.NumberFormat('id-ID').format(row.selisih_sd_bulan)}
+                                </td>
+                            </tr>
+                        `;
                     });
+
                 });
         });
+    }
 
-    });
-</script>
+    /* ===============================
+       SEARCH PEMBELIAN (TABEL BAWAH)
+    ================================ */
+    const searchPembelian = document.getElementById("searchPembelian");
+    const tbodyPembelian = document.getElementById("tbodyPembelian");
 
-<script>
-    document.addEventListener("DOMContentLoaded", () => {
+    if (searchPembelian && tbodyPembelian) {
+        searchPembelian.addEventListener("keyup", () => {
+            const keyword = searchPembelian.value.trim();
 
-        const filterBulan = document.getElementById('filterBulan');
-        const tbody = document.getElementById('tbodyPembelian');
+            fetch(`/ajax/search-pembelian?search=${keyword}`)
+                .then(res => res.json())
+                .then(data => {
 
-        filterBulan.addEventListener('change', () => {
+                    tbodyPembelian.innerHTML = "";
+                    let no = 1;
 
-            const tahun = new URLSearchParams(window.location.search).get("filter_tahun") ?? "";
+                    data.forEach(row => {
+                        tbodyPembelian.innerHTML += `
+                            <tr>
+                                <td class="group-separator-lf group-separator-isi">${no++}</td>
+                                <td class="group-separator-isi">${row.tahun}</td>
+                                <td class="group-separator-isi">
+                                    ${new Date(2000, row.bulan - 1).toLocaleString('id', { month: 'long' })}
+                                </td>
+                                <td class="group-separator-isi">${row.deskripsi}</td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.transaksi_padi)}</td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.transaksi_padi_sd)}</td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.plafond_opl)}</td>
+                                <td class="group-separator"
+                                    style="color:${
+                                        row.persen_terhadap_plafond * 100 < 50 ? 'red' :
+                                        row.persen_terhadap_plafond * 100 < 75 ? 'orange' :
+                                        'green'
+                                    }">
+                                    ${Math.round(row.persen_terhadap_plafond * 100)}%
+                                </td>
+                            </tr>
+                        `;
+                    });
+
+                });
+        });
+    }
+
+    /* ===============================
+       FILTER BULAN (TABEL BAWAH)
+    ================================ */
+
+    const filterBulan = document.getElementById("filterBulan");
+
+    if (filterBulan && tbodyPembelian) {
+        filterBulan.addEventListener("change", () => {
+
             const bulan = filterBulan.value;
 
             fetch(`/ajax/pembelian?filter_bulan=${bulan}`)
                 .then(res => res.json())
                 .then(data => {
 
-                    tbody.innerHTML = "";
+                    tbodyPembelian.innerHTML = "";
                     let no = 1;
 
                     data.forEach(row => {
 
-                        tbody.innerHTML += `
-                        <tr>
-                            <td class="group-separator-lf group-separator-isi">${no++}</td>
-
-                            ${!tahun ? `<td class="group-separator-isi">${row.tahun}</td>` : ""}
-
-                            <td class="group-separator-isi">
-                                ${new Date(2000, row.bulan - 1).toLocaleString('id', { month: 'long' })}
-                            </td>
-
-                            <td class="group-separator-isi">${row.deskripsi}</td>
-
-                            <td class="group-separator-isi">
-                                ${Intl.NumberFormat('id-ID').format(row.transaksi_padi)}
-                            </td>
-
-                            <td class="group-separator-isi">
-                                ${Intl.NumberFormat('id-ID').format(row.transaksi_padi_sd)}
-                            </td>
-
-                            <td class="group-separator-isi">
-                                ${Intl.NumberFormat('id-ID').format(row.plafond_opl)}
-                            </td>
-
-                            <td class="group-separator-isi" style="color:${row.persen_terhadap_plafond < 100 ? 'red' : 'green'};">
-                                ${row.persen_terhadap_plafond}%
-                            </td>
-                        </tr>
-                    `;
+                        tbodyPembelian.innerHTML += `
+                            <tr>
+                                <td class="group-separator-lf group-separator-isi">${no++}</td>
+                                <td class="group-separator-isi">${row.tahun}</td>
+                                <td class="group-separator-isi">
+                                    ${new Date(2000, row.bulan - 1).toLocaleString('id', { month: 'long' })}
+                                </td>
+                                <td class="group-separator-isi">${row.deskripsi}</td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.transaksi_padi)}</td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.transaksi_padi_sd)}</td>
+                                <td class="group-separator-isi">${Intl.NumberFormat('id-ID').format(row.plafond_opl)}</td>
+                                <td class="group-separator"
+                                    style="color:${
+                                        row.persen_terhadap_plafond * 100 < 50 ? 'red' :
+                                        row.persen_terhadap_plafond * 100 < 75 ? 'orange' :
+                                        'green'
+                                    }">
+                                    ${Math.round(row.persen_terhadap_plafond * 100)}%
+                                </td>
+                            </tr>
+                        `;
                     });
 
                 });
         });
+    }
 
-    });
+});
 </script>
