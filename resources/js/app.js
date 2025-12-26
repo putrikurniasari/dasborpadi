@@ -214,59 +214,9 @@ function renderTabelRealisasiCard1() {
 }
 
 // Card Atas (Chart Tahunan) 
-function renderChartTahunanCard1() {
-    // Cek apakah ada data
+function renderChartTahunanCard1(selectedYear = null) {
+
     if (!cacheRealisasiData || cacheRealisasiData.length === 0) {
-        // Sisipkan CSS animasi ke <head> kalau belum ada
-        if (!$('#shineAnimationStyle').length) {
-            $('head').append(`
-                <style id="shineAnimationStyle">
-                    @keyframes shine {
-                        0% { background-position: -200px; }
-                        100% { background-position: 200px; }
-                    }
-
-                    .shine-text {
-                        background: linear-gradient(90deg, #aaa, #fff, #aaa);
-                        background-size: 200px 100%;
-                        -webkit-background-clip: text;
-                        -webkit-text-fill-color: transparent;
-                        animation: shine 2.5s linear infinite;
-                    }
-
-                    .empty-data-container {
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        height: 320px;
-                        text-align: center;
-                        transform: translateY(-30px);
-                    }
-
-                    .empty-data-icon {
-                        font-size: 4rem;
-                        color: #888;
-                        margin-bottom: 10px;
-                        opacity: 0.8;
-                    }
-
-                    .empty-data-text {
-                        font-size: 1.2rem;
-                        font-weight: bold;
-                        color: #cfcfcf;
-                    }
-
-                    .empty-data-text1 {
-                        font-size: 1rem;
-                        font-weight: light;
-                        color: #cfcfcf;
-                    }
-                </style>
-            `);
-        }
-
-        // Masukkan elemen teks + ikon
         $('#chartBig1Wrapper').html(`
             <div class="empty-data-container">
                 <div class="empty-data-icon">
@@ -283,11 +233,9 @@ function renderChartTahunanCard1() {
         return;
     }
 
-    // Reset filter tahun & bulan
-    lastTahunDipilih = null;
     lastBulanDipilih = null;
 
-    // Group data per tahun
+    // Group per tahun
     const grouped = {};
     cacheRealisasiData.forEach(item => {
         const th = Number(item.tahun);
@@ -307,17 +255,19 @@ function renderChartTahunanCard1() {
         }
     });
 
-    // Siapkan data chart
     const tahunList = Object.keys(grouped).map(Number).sort((a, b) => a - b);
-    const labels = tahunList.map(th => th.toString());
 
-    const targetData = tahunList.map(th => {
-        const arr = grouped[th].targetArr;
-        if (!arr || arr.length === 0) return 0;
-        return arr.reduce((a, b) => a + b, 0) / arr.length;
-    });
+    // Tahun default = terbaru
+    if (!selectedYear) {
+        selectedYear = tahunList[tahunList.length - 1];
+    }
 
-    const realisasiData = tahunList.map(th => grouped[th].realisasi || 0);
+    const idx = tahunList.indexOf(selectedYear);
+    if (idx === -1) return;
+
+    const target = grouped[selectedYear].targetArr.reduce((a, b) => a + b, 0) / grouped[selectedYear].targetArr.length;
+    const real = grouped[selectedYear].realisasi;
+    const sisa = Math.max(target - real, 0);
 
     // Render chart
     const ctx = document.getElementById('chartBig1');
@@ -325,62 +275,56 @@ function renderChartTahunanCard1() {
     if (chartBig1Instance) chartBig1Instance.destroy();
 
     chartBig1Instance = new Chart(ctx, {
-        type: 'bar',
+        type: 'doughnut',
         data: {
-            labels,
-            datasets: [
-                {
-                    label: 'Target Tahunan',
-                    data: targetData,
-                    borderColor: '#0D5EA6',
-                    backgroundColor: transparentize('#0D5EA6', 0.5),
-                    borderWidth: 2
-                },
-                {
-                    label: 'Realisasi Tahunan',
-                    data: realisasiData,
-                    borderColor: '#ff7f0e',
-                    backgroundColor: transparentize('#ff7f0e', 0.5),
-                    borderWidth: 2
-                }
-            ]
+            labels: ['Realisasi', 'Sisa Target'],
+            datasets: [{
+                label: `Realisasi Tahun ${selectedYear}`,
+                data: [real, sisa],
+                backgroundColor: ['#ff7f0e', '#e0e0e0'],
+                hoverOffset: 6
+            }]
         },
         options: {
             responsive: true,
-            maintainAspectRatio: false,
+            cutout: '50%',
             plugins: {
                 legend: { display: true },
                 datalabels: {
-                    formatter: function (value) {
-                        return formatShortNumber(Number(value));
-                    },
+                    formatter: v => formatShortNumber(v),
+                    color: '#fff',
                     font: { weight: 'bold' },
-                    color: 'white',
-                    anchor: 'center',
-                    align: 'center',
-                    clamp: true,
-                    clip: false
-                }
-            },
-            scales: {
-                x: { title: { display: true, text: 'Tahun' } },
-                y: {
-                    title: { display: true, text: 'Nilai (Rp)' },
-                    beginAtZero: true,
-                    ticks: { callback: val => formatShortNumber(Number(val)) }
-                }
-            },
-            onClick: (evt, elements) => {
-                if (elements.length > 0) {
-                    const tahun = Number(chartBig1Instance.data.labels[elements[0].index]);
-                    renderChartBulananCard1(tahun);
+                    align: 'center'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: () => [
+                            `Target: ${formatShortNumber(target)}`,
+                            `Realisasi: ${formatShortNumber(real)}`,
+                            `Pencapaian: ${(real / target * 100).toFixed(1)}%`
+                        ]
+                    }
                 }
             }
         }
     });
 
-    // Update UI
-    $('#cardTitle').text('Realisasi Padi UMKM per Tahun');
+    // Klik donut = buka grafik bulanan
+    ctx.onclick = () => renderChartBulananCard1(selectedYear);
+
+    // Build list tahun (UI)
+    let tahunButtons = '';
+    tahunList.forEach(th => {
+        tahunButtons += `
+            <button 
+                class="btn btn-sm ${th === selectedYear ? 'btn-primary' : 'btn-light'} m-1"
+                onclick="renderChartTahunanCard1(${th})">
+                ${th}
+            </button>
+        `;
+    });
+
+    $('#cardTitle').text(`Realisasi Padi UMKM Tahun 2025`);
     $('#chartBig1Wrapper').show();
     $('#chartBig1WrapperDefault').hide();
     $('#btnKembaliChart')
@@ -391,6 +335,7 @@ function renderChartTahunanCard1() {
     $('#btnlihatgrafik').hide();
     $('#searchtabel').hide();
 }
+
 
 // Card Atas (Chart Bulanan)
 function renderChartBulananCard1(tahun) {
@@ -411,14 +356,14 @@ function renderChartBulananCard1(tahun) {
     ];
 
     const labels = [];
-    const targetSdBulan = [];
-    const realisasiSdBulan = [];
+    const targetBulan = [];
+    const realisasiBulan = [];
 
     bulanUnik.forEach(bulan => {
         labels.push(bulanNama[bulan] || bulan);
         const found = filteredData.find(item => Number(item.bulan) === bulan);
-        targetSdBulan.push(found ? Number(found.target_sd_bulan) : 0);
-        realisasiSdBulan.push(found ? Number(found.realisasi_sd_bulan) : 0);
+        targetBulan.push(found ? Number(found.target_bulan) : 0);
+        realisasiBulan.push(found ? Number(found.realisasi_bulan) : 0);
     });
 
     // Render chart
@@ -433,14 +378,14 @@ function renderChartBulananCard1(tahun) {
             datasets: [
                 {
                     label: 'Target Bulanan',
-                    data: targetSdBulan,
+                    data: targetBulan,
                     borderColor: '#0D5EA6',
                     backgroundColor: transparentize('#0D5EA6', 0.5),
                     borderWidth: 2
                 },
                 {
                     label: 'Realisasi Bulanan',
-                    data: realisasiSdBulan,
+                    data: realisasiBulan,
                     borderColor: '#ff7f0e',
                     backgroundColor: transparentize('#ff7f0e', 0.5),
                     borderWidth: 2
@@ -629,15 +574,15 @@ function renderChartPembelianCard2(kebunFilter, tahunFilter) {
         $('#btnKembaliChart2').hide();
         $('#persenButtonsWrapper').hide();
         $('#chartPembelianPadi')
-                .closest('.card')
-                .find('.card-title')
-                .text('Tabel Transaksi Padi');
+            .closest('.card')
+            .find('.card-title')
+            .text('Tabel Transaksi Padi');
         return; // keluar fungsi, tidak perlu render chart pembelian
     } else {
         $('#chartPembelianPadi')
-                .closest('.card')
-                .find('.card-title')
-                .text('Transaksi Padi Kebun ' + kebunFilter);
+            .closest('.card')
+            .find('.card-title')
+            .text('Transaksi Padi Kebun ' + kebunFilter);
         $('#chartBig2WrapperDefault').hide();
         $('#chartPembelianWrapper').show();
     }

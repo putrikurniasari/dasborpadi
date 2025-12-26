@@ -13,7 +13,8 @@ class ExcelController extends Controller
         $files = ExcelRealisasi::orderBy('created_at', 'desc')->get();
         return view('excel.realisasi_umkm', [
             'files' => $files,
-            'title' => 'Realisasi Padi UMKM'
+            'title' => 'Realisasi Padi UMKM',
+            'page' => 'pgrealisasi'
         ]);
 
     }
@@ -23,7 +24,8 @@ class ExcelController extends Controller
         $files = ExcelTransaksi::orderBy('created_at', 'desc')->get();
         return view('excel.pembelian_padi', [
             'files' => $files,
-            'title' => 'Pembelian Padi'
+            'title' => 'Pembelian Padi',
+            'page' => 'pgpembelian'
         ]);
 
     }

@@ -12,29 +12,26 @@ class RegisterController extends Controller
 {
     public function register(Request $request)
     {
-        // Validasi input
         $request->validate([
             'username' => 'required|string|max:100|unique:tb_users,username',
-            'password' => 'required|string|min:8|same:confpassword',
-            'confpassword' => 'required|string|min:8',
+            'password' => 'required|string|min:8|confirmed',
         ], [
             'username.unique' => 'Username sudah terdaftar.',
             'password.min' => 'Password minimal 8 karakter.',
-            'password.same' => 'Konfirmasi password tidak cocok.',
-            'confpassword.min' => 'Konfirmasi password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
         ]);
 
-        // Simpan user baru
         $user = User::create([
             'username' => $request->username,
             'password' => Hash::make($request->password),
         ]);
 
-        // Login otomatis setelah register
         Auth::login($user);
         session()->flash('login_success', true);
+
         return redirect()->intended('/dashboard');
     }
+
     public function checkUsername(Request $request)
     {
         $exists = User::where('username', $request->username)->exists();

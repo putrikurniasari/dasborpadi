@@ -16,7 +16,8 @@ class ProfileController extends Controller
 
         return view('profile.edit', [
             'user' => $user,
-            'title' => 'Edit Profil'
+            'title' => 'Edit Profil',
+            'page' => 'pgprofil'
         ]);
 
     }
