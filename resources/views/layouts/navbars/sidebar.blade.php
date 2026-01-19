@@ -84,13 +84,13 @@
                                 <li>
                                     <a href="{{ route('dashboard') }}" class="menu-dropdown-item group"
                                         :class="page === 'dashboardmain' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                                        Monitoring Padi UMKM
+                                        Tabel Monitoring PaDi UMKM
                                     </a>
                                 </li>
                                 <li>
                                     <a href="{{ route('dashboard.grafik') }}" class="menu-dropdown-item group"
                                         :class="page === 'dashboardgrafik' ? 'menu-dropdown-item-active' : 'menu-dropdown-item-inactive'">
-                                        Grafik Padi
+                                        Grafik Monitoring PaDi UMKM
                                     </a>
                                 </li>
                             </ul>
